@@ -51,7 +51,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			hw.AddHomework(getUser(*r), homework)
 		}
-		http.Redirect(w, r, "/index.html", http.StatusFound)
+		http.Redirect(w, r, "/tasks.html", http.StatusFound)
 		return
 	}
 	if loggedIn || isLoggedIn(*r) {
@@ -93,7 +93,7 @@ func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 		fmt.Fprintln(w, err)
 		return hw.Homework{}, err
 	}
-	return hw.Homework{header.Filename, r.Form["link"][0], r.Form["description"][0], ""}, nil
+	return hw.Homework{header.Filename, r.Form["link"][0], r.Form["description"][0], r.Form["task"][0]}, nil
 }
 func getUser(r http.Request) string {
 	cookie := getSessionIdCookie(r)
