@@ -84,7 +84,7 @@
 								<label for="task">Избери задача:</label>
 								<select id="task" name="task">
 								  <option value="team">Екипна задача</option>
-								  <option value="presentation">Проектна задача</option>
+								  <option value="project">Проектна задача</option>
 								  <option value="robot">Робо мисия</option>
 								</select>
 								</p>
@@ -104,23 +104,15 @@
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							<tr>
-							<td>01.07.2016 18:56</td>
-							<td><a href="#">Отвори</a> </td>
-							<td>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was  </td>
-							<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
-							</tr>
-							<tr>
-							<td>03.07.2016 18:56</td>
-							<td><a href="#">Отвори</a></td>
-							<td>ed ut perspiciatis unde omnis iste natus error  </td>
-							</tr>
-							<tr>
-							<td>11.07.2016 18:56</td>
-							<td><a href="#">Отвори</a></td>
-							<td>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolor</td>
-							</tr>
-							<tr><td></td><td></td><td></td> </tr>
+								{{range $index, $element := .Team}}
+								<tr>
+							 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+									<td><a href="{{$element.Link}}">Отвори</a> </td>
+									<td>{{$element.Description}}</td>
+									<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+								</tr>
+								{{end}}
+								<tr><td></td><td></td><td></td><td></td></tr>
 							</tbody>
 						</table>
 						
@@ -129,20 +121,15 @@
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							<tr>
-							<td>03.07.2016 18:56</td>
-							<td>50.2</td>
-							<td>Lorem Ipsum Dollor Sit amet </td>
-							<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
-							</tr>
-							<tr>
-							<td>11.07.2016 18:56</td>
-							<td>25.4</td>
-							<td>Dollor Lorem Ipsum Sit amet</td>
-							<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
-							
-							</tr>
-							<tr><td></td><td></td><td></td><td></td> </tr>
+							{{range $index, $element := .Project}}
+								<tr>
+							 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+									<td><a href="{{$element.Link}}">Отвори</a> </td>
+									<td>{{$element.Description}}</td>
+									<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+								</tr>
+							{{end}}
+							<tr><td></td><td></td><td></td><td></td></tr>
 							</tbody>
 						</table>
 						
@@ -152,12 +139,27 @@
 							<colgroup><col>
 							</colgroup>
 							<tbody>
+							{{range $index, $element := .Robot}}
+								<tr>
+							 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+									<td><a href="{{$element.Link}}">Отвори</a> </td>
+									<td>{{$element.Description}}</td>
+									<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+								</tr>
+							{{end}}
+							<tr><td></td><td></td><td></td><td></td></tr>
+							</tbody>
+						</table>
+						<!--table class="task-table">
+							<colgroup><col>
+							</colgroup>
+							<tbody>
 							<tr>
 							<td>Не е качено нищо</td>
 							</tr>
 							<tr><td></td> </tr>
 							</tbody>
-						</table>
+						</table-->
 						
 						<!--
 						<img src="images/page4_img1.jpg" alt="" class="img_inner fleft">

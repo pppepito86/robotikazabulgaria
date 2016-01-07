@@ -13,6 +13,7 @@ import "io"
 import "os"
 
 import (
+	"robotikazabulgaria/dashboard"
 	"robotikazabulgaria/hw"
 	"robotikazabulgaria/session"
 	"robotikazabulgaria/user"
@@ -71,6 +72,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			// pwd, _ := os.Getwd()
 			// files, _ := filepath.Glob(pwd+"\\"+getUser(*r)+"\\*")
 			t.Execute(w, hw.ReadHomeworks(getUser(*r)))
+		} else if r.URL.Path == "/tasks.html" {
+			t.Execute(w, dashboard.GetDashboard(getUser(*r)))
 		} else {
 			t.Execute(w, nil)
 		}
