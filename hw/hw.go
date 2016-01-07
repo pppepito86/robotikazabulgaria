@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"robotikazabulgaria/ws"
+	"time"
 )
 
 type Homework struct {
@@ -12,6 +13,7 @@ type Homework struct {
 	Link        string
 	Description string
 	Task        string
+	Time        time.Time
 }
 
 func ReadHomeworks(user string) []Homework {

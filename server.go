@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
 import "net/http"
 import "html/template"
@@ -78,8 +82,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 	file, header, err := r.FormFile("file")
 	if err != nil {
-		fmt.Fprintln(w, err)
-		return hw.Homework{}, err
+		if strings.TrimSpace(r.Form["link"][0]) != "" {
+			return hw.Homework{"", r.Form["link"][0], r.Form["description"][0], r.Form["task"][0], time.Now().UTC()}, nil
+		} else {
+			return hw.Homework{}, err
+		}
 	}
 	defer file.Close()
 	fp := ws.GetFilePath(getUser(*r), header.Filename)
@@ -94,7 +101,7 @@ func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 		fmt.Fprintln(w, err)
 		return hw.Homework{}, err
 	}
-	return hw.Homework{header.Filename, r.Form["link"][0], r.Form["description"][0], r.Form["task"][0]}, nil
+	return hw.Homework{header.Filename, r.Form["link"][0], r.Form["description"][0], r.Form["task"][0], time.Now().UTC()}, nil
 }
 func getUser(r http.Request) string {
 	cookie := getSessionIdCookie(r)
