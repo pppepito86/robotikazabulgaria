@@ -1,0 +1,32 @@
+.task-table {
+    /* font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;*/
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    margin: 20px;
+}
+.task-table a {
+	color: blue;
+	text-decoration: underline;
+}
+.task-table th {
+    font-size: 14px;
+    font-weight: normal;
+    color: #039;
+    padding: 12px 15px;
+}
+.task-table td {
+    color: #669;
+    border-top: 1px solid #e8edff;
+    padding: 10px 15px;
+}
+.oce-first {
+    background: #d0dafd;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+}
+.task-table tr:hover td {
+    color: #339;
+    background: #eff2ff;
+}
