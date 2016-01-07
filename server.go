@@ -61,6 +61,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if loggedIn || isLoggedIn(*r) {
+		if r.URL.Path == "/download" {
+			download(w, r)
+			return
+		}
 		fmt.Println("******", r.URL.Path[1:])
 		t, err := template.ParseFiles(r.URL.Path[1:])
 		if err != nil {
@@ -80,6 +84,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Redirect(w, r, "/index.html", http.StatusFound)
 	}
+}
+
+func download(w http.ResponseWriter, r *http.Request) {
+	user := r.URL.Query().Get("user")
+	file := r.URL.Query().Get("file")
+	if user != getUser(*r) {
+		return
+	}
+
+	http.ServeFile(w, r, ws.GetFilePath(user, file))
 }
 
 func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
