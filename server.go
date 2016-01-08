@@ -39,7 +39,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.URL.Path == "/index.html" && !isLoggedIn(*r) {
 		t, _ := template.ParseFiles("index.html")
-		t.Execute(w, nil)
+		location, _ := time.LoadLocation("Europe/Sofia")
+		tt := time.Date(2016, 1, 28, 0, 0, 0, 0, location)
+		t.Execute(w, tt.UnixNano()/1000000)
 		return
 	}
 	if r.URL.Path == "/login.html" {
@@ -75,7 +77,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			// sss := []string{"aaa", "bbb", "ccc"}
 			// pwd, _ := os.Getwd()
 			// files, _ := filepath.Glob(pwd+"\\"+getUser(*r)+"\\*")
-			t.Execute(w, hw.ReadHomeworks(getUser(*r)))
+			location, _ := time.LoadLocation("Europe/Sofia")
+			tt := time.Date(2016, 1, 28, 0, 0, 0, 0, location)
+			t.Execute(w, tt.UnixNano()/1000000)
 		} else if r.URL.Path == "/tasks.html" {
 			r.ParseForm()
 			fmt.Println(r.Form["operation"])
