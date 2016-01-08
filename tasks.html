@@ -89,7 +89,7 @@
 								
 								<tr><td><label for="file">Файл:</label></td><td><input type="file" name="file" id="file" /></td> </tr>
 								<tr><td><label for="link">Линк:</label></td><td><input type="text" style="width:232px" name="link" id="link" /></td> </tr>
-								<tr><td><label for="description">Описание:</label></td><td><textarea style="width:230px" rows="4" name="description" id="description" > </textarea></td> </tr>
+								<tr><td><label for="description">Описание:</label></td><td><textarea style="width:230px" rows="4" name="description" id="description" ></textarea></td> </tr>
 								</table>
 								
 								<!--
@@ -120,7 +120,7 @@
 							{{if .Team}}
 								{{range $index, $element := .Team}}
 								<tr>
-							 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+							 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
 									<td><a href="{{$element.Link}}">Отвори</a> </td>
 									<td>{{$element.Description}}</td>
 									<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
@@ -144,7 +144,7 @@
 							{{if .Project}}
 								{{range $index, $element := .Project}}
 									<tr>
-								 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
 										<td><a href="{{$element.Link}}">Отвори</a> </td>
 										<td>{{$element.Description}}</td>
 										<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
@@ -169,7 +169,7 @@
 							{{if .Robot}}
 								{{range $index, $element := .Robot}}
 									<tr>
-								 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
 										<td><a href="{{$element.Link}}">Отвори</a> </td>
 										<td>{{$element.Description}}</td>
 										<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
