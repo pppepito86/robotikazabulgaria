@@ -80,7 +80,7 @@
 						<div class="block3">
 							<p><h3>Предаване</h3> </p>
 							<form action="upload" method="post" enctype="multipart/form-data" >
-								<table class="submit-table"">
+								<table class="submit-table">
 								<tr><td><label for="task">Тип:</label></td><td><select id="task" style="width:235px"	 name="task">
 								  <option value="team">Екипна задача</option>
 								  <option value="project">Проектна задача</option>
@@ -117,6 +117,7 @@
 							<colgroup><col>
 							</colgroup>
 							<tbody>
+							{{if .Team}}
 								{{range $index, $element := .Team}}
 								<tr>
 							 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
@@ -126,6 +127,12 @@
 								</tr>
 								{{end}}
 								<tr><td></td><td></td><td></td><td></td></tr>
+							{{else}}
+								<tr>
+								<td>Не е качено нищо</td>
+								</tr>
+								<tr><td></td> </tr>
+							{{end}}
 							</tbody>
 						</table>
 						
@@ -134,15 +141,22 @@
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							{{range $index, $element := .Project}}
+							{{if .Project}}
+								{{range $index, $element := .Project}}
+									<tr>
+								 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+										<td><a href="{{$element.Link}}">Отвори</a> </td>
+										<td>{{$element.Description}}</td>
+										<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+									</tr>
+								{{end}}
+								<tr><td></td><td></td><td></td><td></td></tr>
+							{{else}}
 								<tr>
-							 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
-									<td><a href="{{$element.Link}}">Отвори</a> </td>
-									<td>{{$element.Description}}</td>
-									<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+								<td>Не е качено нищо</td>
 								</tr>
+								<tr><td></td> </tr>
 							{{end}}
-							<tr><td></td><td></td><td></td><td></td></tr>
 							</tbody>
 						</table>
 						
@@ -152,15 +166,22 @@
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							{{range $index, $element := .Robot}}
+							{{if .Robot}}
+								{{range $index, $element := .Robot}}
+									<tr>
+								 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
+										<td><a href="{{$element.Link}}">Отвори</a> </td>
+										<td>{{$element.Description}}</td>
+										<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+									</tr>
+								{{end}}
+								<tr><td></td><td></td><td></td><td></td></tr>
+							{{else}}
 								<tr>
-							 		<td>{{$element.Time.Format "Jan 02, 2006 15:04"}}</td>
-									<td><a href="{{$element.Link}}">Отвори</a> </td>
-									<td>{{$element.Description}}</td>
-									<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+								<td>Не е качено нищо</td>
 								</tr>
+								<tr><td></td> </tr>
 							{{end}}
-							<tr><td></td><td></td><td></td><td></td></tr>
 							</tbody>
 						</table>
 						<!--table class="task-table">
