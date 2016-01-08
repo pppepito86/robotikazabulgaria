@@ -13,11 +13,11 @@
 .task-table th {
     font-size: 14px;
     font-weight: normal;
-    color: #039;
+    color: #093;
     padding: 12px 15px;
 }
 .task-table td {
-    color: #669;
+    color: #696;
     border-top: 1px solid #e8edff;
     padding: 10px 15px;
 }
@@ -27,6 +27,12 @@
     border-left: 10px solid transparent;
 }
 .task-table tr:hover td {
-    color: #339;
-    background: #eff2ff;
+    color: #393;
+    background: #effff2;
+}
+
+
+.submit-table td {
+	padding-top: 10px;
+	padding-left: 5px;
 }

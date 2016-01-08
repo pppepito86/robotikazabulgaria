@@ -14,13 +14,13 @@
 		<script src="js/jquery-migrate-1.2.1.js"></script>
 		<script src="js/script.js"></script>
 		<script src="js/superfish.js"></script>
-		<script src="js/jquery.ui.totop.js"></script>
+		<!-- <script src="js/jquery.ui.totop.js"></script> -->
 		<script src="js/jquery.equalheights.js"></script>
 		<script src="js/jquery.mobilemenu.js"></script>
 
 		<script>
 			$(document).ready(function(){
-				$().UItoTop({ easingType: 'easeOutQuart' });
+				// $().UItoTop({ easingType: 'easeOutQuart' });
 			});
 		</script>
 		<!--[if lt IE 8]>
@@ -53,7 +53,7 @@
 							<nav class="horizontal-nav full-width horizontalNav-notprocessed">
 								<ul class="sf-menu">
 									<li><a href="home.html">Начало</a></li>
-									<li><a href="profile.html">Профил</a></li>
+									<!-- <li><a href="profile.html">Профил</a></li> -->
 									<li class="current"><a href="tasks.html">Задания</a></li>
 								</ul>
 							</nav>
@@ -80,8 +80,21 @@
 						<div class="block3">
 							<p><h3>Предаване</h3> </p>
 							<form action="upload" method="post" enctype="multipart/form-data" >
+								<table class="submit-table"">
+								<tr><td><label for="task">Тип:</label></td><td><select id="task" style="width:235px"	 name="task">
+								  <option value="team">Екипна задача</option>
+								  <option value="project">Проектна задача</option>
+								  <option value="robot">Робо мисия</option>
+								</select></td> </tr>
+								
+								<tr><td><label for="file">Файл:</label></td><td><input type="file" name="file" id="file" /></td> </tr>
+								<tr><td><label for="link">Линк:</label></td><td><input type="text" style="width:232px" name="link" id="link" /></td> </tr>
+								<tr><td><label for="description">Описание:</label></td><td><textarea style="width:230px" rows="4" name="description" id="description" > </textarea></td> </tr>
+								</table>
+								
+								<!--
 								<p>
-								<label for="task">Избери задача:</label>
+								<label for="task">Тип:</label>
 								<select id="task" name="task">
 								  <option value="team">Екипна задача</option>
 								  <option value="project">Проектна задача</option>
@@ -93,7 +106,7 @@
 								<p><label for="link">Линк:</label><input type="text" name="link" id="link" /> </p>
 								
 								<p><label for="description">Описание:</label><textarea cols="20" rows="4" name="description" id="description" > </textarea> </p>
-								
+								-->
 						    <div class="alright"><input type="submit" class="btn" value="Качи" /></div>
 							</form>
 						</div>
