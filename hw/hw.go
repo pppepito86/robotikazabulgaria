@@ -6,6 +6,7 @@ import (
 	"os"
 	"robotikazabulgaria/ws"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -17,6 +18,8 @@ type Homework struct {
 	Time        time.Time
 }
 
+var l sync.Mutex
+
 func ReadHomeworks(user string) []Homework {
 	var homeworks []Homework
 	file := ws.ReadFile(user, "homework.json")
@@ -24,7 +27,7 @@ func ReadHomeworks(user string) []Homework {
 	return homeworks
 }
 
-func WriteHomeworks(user string, homework []Homework) {
+func writeHomeworks(user string, homework []Homework) {
 	file := ws.GetFilePath(user, "homework.json")
 	json, _ := json.Marshal(homework)
 	os.Create(file)
@@ -32,9 +35,12 @@ func WriteHomeworks(user string, homework []Homework) {
 }
 
 func AddHomework(user string, homework Homework) {
+	l.Lock()
+	defer l.Unlock()
+	homework.Time = time.Now().UTC()
 	homeworks := ReadHomeworks(user)
 	homeworks = append(homeworks, homework)
-	WriteHomeworks(user, homeworks)
+	writeHomeworks(user, homeworks)
 }
 
 func DeleteHomework(user string, id string) {
@@ -44,5 +50,5 @@ func DeleteHomework(user string, id string) {
 			homeworks = append(homeworks[:i], homeworks[i+1:]...)
 		}
 	}
-	WriteHomeworks(user, homeworks)
+	writeHomeworks(user, homeworks)
 }
