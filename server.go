@@ -77,6 +77,14 @@ func handler(w http.ResponseWriter, r *http.Request) {
 			// files, _ := filepath.Glob(pwd+"\\"+getUser(*r)+"\\*")
 			t.Execute(w, hw.ReadHomeworks(getUser(*r)))
 		} else if r.URL.Path == "/tasks.html" {
+			r.ParseForm()
+			fmt.Println(r.Form["operation"])
+			if len(r.Form["operation"]) != 0 {
+				fmt.Println("delete")
+				if r.Form["operation"][0] == "delete" {
+					hw.DeleteHomework(getUser(*r), r.Form["id"][0])
+				}
+			}
 			t.Execute(w, dashboard.GetDashboard(getUser(*r)))
 		} else {
 			t.Execute(w, nil)

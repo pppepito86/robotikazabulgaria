@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"robotikazabulgaria/ws"
+	"strconv"
 	"time"
 )
 
@@ -33,5 +34,15 @@ func WriteHomeworks(user string, homework []Homework) {
 func AddHomework(user string, homework Homework) {
 	homeworks := ReadHomeworks(user)
 	homeworks = append(homeworks, homework)
+	WriteHomeworks(user, homeworks)
+}
+
+func DeleteHomework(user string, id string) {
+	homeworks := ReadHomeworks(user)
+	for i, homework := range homeworks {
+		if id == strconv.FormatInt(homework.Time.UnixNano(), 10) {
+			homeworks = append(homeworks[:i], homeworks[i+1:]...)
+		}
+	}
 	WriteHomeworks(user, homeworks)
 }

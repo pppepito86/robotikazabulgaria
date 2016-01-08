@@ -123,7 +123,11 @@
 							 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
 									<td><a href="{{$element.Link}}">Отвори</a> </td>
 									<td>{{$element.Description}}</td>
-									<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+									<td><form method="post" action="/tasks.html">
+									<input type="hidden" name="operation" value="delete" />
+									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
+									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
+									</form></td>
 								</tr>
 								{{end}}
 								<tr><td></td><td></td><td></td><td></td></tr>
@@ -147,7 +151,11 @@
 								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
 										<td><a href="{{$element.Link}}">Отвори</a> </td>
 										<td>{{$element.Description}}</td>
-										<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+										<td><form method="post" action="/tasks.html">
+									<input type="hidden" name="operation" value="delete" />
+									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
+									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
+									</form></td>
 									</tr>
 								{{end}}
 								<tr><td></td><td></td><td></td><td></td></tr>
@@ -172,7 +180,11 @@
 								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
 										<td><a href="{{$element.Link}}">Отвори</a> </td>
 										<td>{{$element.Description}}</td>
-										<td><span class="fa fa-trash-o" style="font-size:18pt"></span></td>
+									<td><form method="post" action="/tasks.html">
+									<input type="hidden" name="operation" value="delete" />
+									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
+									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
+									</form></td>
 									</tr>
 								{{end}}
 								<tr><td></td><td></td><td></td><td></td></tr>
