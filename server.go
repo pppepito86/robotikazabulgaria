@@ -13,9 +13,11 @@ import "io"
 import "os"
 
 import (
+	"robotikazabulgaria/admin"
 	"robotikazabulgaria/dashboard"
 	"robotikazabulgaria/hw"
 	"robotikazabulgaria/session"
+	"robotikazabulgaria/teams"
 	"robotikazabulgaria/user"
 	"robotikazabulgaria/ws"
 )
@@ -32,29 +34,78 @@ func main() {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r.URL.Path)
-	loggedIn := false
-	if r.URL.Path == "/login.html" && isLoggedIn(*r) {
+
+	if !isLoggedIn(*r) {
+		handleGuest(w, r)
+	} else if isAdmin(*r) {
+		handleAdmin(w, r)
+	} else {
+		handleTeam(w, r)
+	}
+}
+
+func handleGuest(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.URL.Path)
+	if r.URL.Path == "/login.html" {
+		if r.Method == "POST" {
+			if postLogin(w, r) {
+				fmt.Println("login successful")
+				http.Redirect(w, r, "/home.html", http.StatusFound)
+			} else {
+				fmt.Println("login failed")
+				sendError(w, r, "login failed", "/login.html")
+			}
+		} else {
+			t, _ := template.ParseFiles("login.html")
+			t.Execute(w, nil)
+		}
+	} else if r.URL.Path == "/register.html" {
+		if r.Method == "POST" {
+			err := register(r)
+			if err == nil {
+				http.Redirect(w, r, "/login.html", http.StatusFound)
+			} else {
+				sendError(w, r, err.Error(), "/register.html")
+			}
+		} else {
+			t, _ := template.ParseFiles("register.html")
+			t.Execute(w, nil)
+		}
+	} else if r.URL.Path == "/index.html" {
+		t, _ := template.ParseFiles("index.html")
+		location, _ := time.LoadLocation("Europe/Sofia")
+		deadline := time.Date(2016, 1, 24, 18, 0, 0, 0, location)
+		t.Execute(w, deadline.UnixNano()/1000000)
+	} else {
+		http.Redirect(w, r, "/index.html", http.StatusFound)
+	}
+}
+
+func handleAdmin(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/admin.html" {
+		http.Redirect(w, r, "/admin.html", http.StatusFound)
+		return
+	}
+	t, _ := template.ParseFiles("admin.html")
+	if r.Method == "POST" {
+		r.ParseForm()
+		fmt.Println("id", r.Form["id"])
+		fmt.Println("city", r.Form["city"])
+		fmt.Println("school", r.Form["school"])
+		admin.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
+	}
+	t.Execute(w, admin.GetTeamIds())
+}
+
+func handleTeam(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/login.html" ||
+		r.URL.Path == "/register.html" ||
+		r.URL.Path == "/index.html" ||
+		r.URL.Path == "/admin.html" {
 		http.Redirect(w, r, "/home.html", http.StatusFound)
 		return
 	}
-	if r.URL.Path == "/index.html" && !isLoggedIn(*r) {
-		t, _ := template.ParseFiles("index.html")
-		location, _ := time.LoadLocation("Europe/Sofia")
-		tt := time.Date(2016, 1, 28, 0, 0, 0, 0, location)
-		t.Execute(w, tt.UnixNano()/1000000)
-		return
-	}
-	if r.URL.Path == "/login.html" {
-		t, _ := template.ParseFiles("login.html")
-		t.Execute(w, nil)
-		return
-	} else if r.URL.Path == "/login" {
-		if r.Method == "GET" {
-			loggedIn = getLogin(w, *r)
-		} else if r.Method == "POST" {
-			loggedIn = postLogin(w, r)
-		}
-	} else if r.URL.Path == "/upload" {
+	if r.URL.Path == "/upload" {
 		homework, err := upload(w, r)
 		if err == nil {
 			hw.AddHomework(getUser(*r), homework)
@@ -62,40 +113,57 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/tasks.html", http.StatusFound)
 		return
 	}
-	if loggedIn || isLoggedIn(*r) {
-		if r.URL.Path == "/download" {
-			download(w, r)
-			return
-		}
-		fmt.Println("******", r.URL.Path[1:])
-		t, err := template.ParseFiles(r.URL.Path[1:])
-		if err != nil {
-			http.Redirect(w, r, "/home.html", http.StatusFound)
-			return
-		}
-		if r.URL.Path == "/home.html" {
-			// sss := []string{"aaa", "bbb", "ccc"}
-			// pwd, _ := os.Getwd()
-			// files, _ := filepath.Glob(pwd+"\\"+getUser(*r)+"\\*")
-			location, _ := time.LoadLocation("Europe/Sofia")
-			tt := time.Date(2016, 1, 28, 0, 0, 0, 0, location)
-			t.Execute(w, tt.UnixNano()/1000000)
-		} else if r.URL.Path == "/tasks.html" {
-			r.ParseForm()
-			fmt.Println(r.Form["operation"])
-			if len(r.Form["operation"]) != 0 {
-				fmt.Println("delete")
-				if r.Form["operation"][0] == "delete" {
-					hw.DeleteHomework(getUser(*r), r.Form["id"][0])
-				}
-			}
-			t.Execute(w, dashboard.GetDashboard(getUser(*r)))
-		} else {
-			t.Execute(w, nil)
-		}
-	} else {
-		http.Redirect(w, r, "/index.html", http.StatusFound)
+	if r.URL.Path == "/download" {
+		download(w, r)
+		return
 	}
+	fmt.Println("******", r.URL.Path[1:])
+	t, err := template.ParseFiles(r.URL.Path[1:])
+	if err != nil {
+		http.Redirect(w, r, "/home.html", http.StatusFound)
+		return
+	}
+	if r.URL.Path == "/home.html" {
+		// sss := []string{"aaa", "bbb", "ccc"}
+		// pwd, _ := os.Getwd()
+		// files, _ := filepath.Glob(pwd+"\\"+getUser(*r)+"\\*")
+		location, _ := time.LoadLocation("Europe/Sofia")
+		tt := time.Date(2016, 1, 24, 18, 0, 0, 0, location)
+		t.Execute(w, tt.UnixNano()/1000000)
+	} else if r.URL.Path == "/tasks.html" {
+		r.ParseForm()
+		fmt.Println(r.Form["operation"])
+		if len(r.Form["operation"]) != 0 {
+			fmt.Println("delete")
+			if r.Form["operation"][0] == "delete" {
+				hw.DeleteHomework(getUser(*r), r.Form["id"][0])
+			}
+		}
+		t.Execute(w, dashboard.GetDashboard(getUser(*r)))
+	} else {
+		t.Execute(w, nil)
+	}
+
+}
+
+func register(r *http.Request) error {
+	r.ParseForm()
+	return teams.RegisterTeam(
+		r.Form["username"][0],
+		r.Form["password1"][0],
+		r.Form["password2"][0],
+		r.Form["city"][0],
+		r.Form["school"][0],
+		r.Form["identification_number"][0])
+}
+
+func sendError(w http.ResponseWriter, r *http.Request, msg string, page string) {
+	t, _ := template.ParseFiles("error.html")
+	t.Execute(w,
+		struct {
+			Message string
+			Page    string
+		}{msg, page})
 }
 
 func download(w http.ResponseWriter, r *http.Request) {
@@ -141,6 +209,14 @@ func isLoggedIn(r http.Request) bool {
 	fmt.Println("session Cookie is:", cookie.Value)
 	return session.ContainsKey(cookie.Value)
 }
+
+func isAdmin(r http.Request) bool {
+	cookie := getSessionIdCookie(r)
+	fmt.Println("session Cookie is:", cookie.Value)
+	name := session.GetAttribute(cookie.Value)
+	return user.ContainsUser(name)
+}
+
 func getSessionIdCookie(r http.Request) *http.Cookie {
 	for _, cookie := range r.Cookies() {
 		if cookie.Name == "session.id" {
@@ -167,7 +243,8 @@ func postLogin(w http.ResponseWriter, r *http.Request) bool {
 }
 func login(w http.ResponseWriter, r http.Request, username string, password string) bool {
 	fmt.Println("username:", username, "password:", password)
-	if !user.Authenticate(username, password) {
+	if !user.Authenticate(username, password) &&
+		!teams.Authenticate(username, password) {
 		return false
 	}
 	val := username + "-" + user.RandomString()

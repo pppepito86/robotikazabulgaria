@@ -65,7 +65,7 @@
 						<div class="menu_block">
 							<nav class="horizontal-nav full-width horizontalNav-notprocessed">
 								<ul class="sf-menu">
-									<li class="current"><a href="index.html">Начало</a></li>
+									<li class="current"><a href="index.html">Error</a></li>
 								</ul>
 							</nav>
 							<div class="clear"></div>
@@ -74,32 +74,13 @@
 					<div class="clear"></div>
 				</div>
 			</header>
-			<div class="slider_wrapper">
-				<div id="camera_wrap" class="">
-					<div data-src="images/slide1.jpg">
-					</div>
-					<div data-src="images/slide2.jpg">
-					</div>
-					<div data-src="images/slide3.jpg">
-					</div>
-					<div data-src="images/slide4.jpg">
-					</div>
-					<div data-src="images/slide5.jpg">
-					</div>
-					<div data-src="images/slide6.jpg">
-					</div>
-				</div>
-			</div>
-<!--==============================Content=================================-->
+		<!--==============================Content=================================-->
 			<div class="content"><div class="ic">More Website Templates @ TemplateMonster.com - April 21, 2014!</div>
 				<div class="container_12">
 					<div class="grid_12">
-						<h2 class="center">Краен срок на задание 1</h2>
+            <h2 class="center">{{.Message}}</h2>
 						<div class="count_wrap">
-							<form><input type="hidden" id="deadline" name="deadline" value="{{.}}" /></form>
-							<div id="counter"></div>
-							<div class="clear"></div>
-							<a href="login.html">Вход</a><br /><a href="register.html">Регистрация</a>
+              <a href="{{.Page}}">Back</a>
 						</div>
 					</div>
 					

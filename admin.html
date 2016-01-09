@@ -70,26 +70,25 @@
 						<h3>Материали</h3>
 						<ul class="list1 color1">
 							<li><a href="#"></a></li>
-              <li>Екипна задача - <a href="docs/team.pdf" >pdf</a>, <a href="docs/team.docx" >docs</a></li>
-              <li>Проектна задача - <a href="docs/project.pdf" >pdf</a>, <a href="docs/project.docx" >docx</a></li>
-              <li>Робо мисия - <a href="docs/robot.pdf" >pdf</a>, <a href="https://www.youtube.com/watch?v=qDD5SOT4Y6I" >video</a></li>
+							<li><a href="docs/team.pdf" >Екипна задача</a></li>
+							<li><a href="docs/project.pdf" >Проектна задача</a></li>
+							<li><a href="docs/robot.pdf" >Робо мисия</a></li>
 							<br />
-              <li>Поле - <a href="docs/field.pdf" >pdf</a>, <a href="https://www.youtube.com/watch?v=RNeJ3nINJ0A" >video</a></li>
-              <li>Правила - <a href="docs/rules.pdf" >pdf</a></li>
+							<li><a href="docs/field.pdf" >Поле</a></li>
+							<li><a href="docs/rules.pdf" >Правила</a></li>
 						</ul>
 						<div class="block3">
 							<p><h3>Предаване</h3> </p>
-							<form action="upload" method="post" enctype="multipart/form-data" >
+							<form action="/admin.html" method="post" >
 								<table class="submit-table">
-								<tr><td><label for="task">Тип:</label></td><td><select id="task" style="width:235px"	 name="task">
-								  <option value="team">Екипна задача</option>
-								  <option value="project">Проектна задача</option>
-								  <option value="robot">Робо мисия</option>
+								<tr><td><label for="type">Тип:</label></td><td><select id="type" style="width:235px"	 name="task">
+								  <option value="team_id">Team Id</option>
 								</select></td> </tr>
 								
-								<tr><td><label for="file">Файл:</label></td><td><input type="file" name="file" id="file" /></td> </tr>
-								<tr><td><label for="link">Линк:</label></td><td><input type="text" style="width:232px" name="link" id="link" /></td> </tr>
-								<tr><td><label for="description">Описание:</label></td><td><textarea style="width:230px" rows="4" name="description" id="description" ></textarea></td> </tr>
+								<tr><td><label for="id">Id:</label></td><td><input type="text" style="width:232px" name="id" id="id" /></td> </tr>
+								<tr><td><label for="city">City:</label></td><td><input type="text" style="width:232px" name="city" id="city" /></td> </tr>
+								<tr><td><label for="school">School:</label></td><td><input type="text" style="width:232px" name="school" id="school" /></td> </tr>
+
 								</table>
 								
 								<!--
@@ -112,25 +111,26 @@
 						</div>
 					</div>
 					<div class="grid_8">
-						<h3>Екипна задача</h3>
+						<h3>Team Ids</h3>
 						<table class="task-table">
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							{{if .Team}}
-								{{range $index, $element := .Team}}
+              {{if .}}
+              <tr><td>Id</td><td>City</td><td>School</td><td></td></th>
+								{{range $index, $element := .}}
 								<tr>
-							 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
-									<td><a href="{{$element.Link}}">Отвори</a> </td>
-									<td>{{$element.Description}}</td>
-									<td><form method="post" action="/tasks.html">
+							 		<td contenteditable="true" >{{$element.Id}}</td>
+									<td>{{$element.City}}</td>
+									<td>{{$element.School}}</td>
+              		<td><form method="post" action="/tasks.html">
 									<input type="hidden" name="operation" value="delete" />
-									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
+									<input type="hidden" name="id" value="{{$element.Id}}" />
 									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
 									</form></td>
 								</tr>
 								{{end}}
-								<tr><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td></tr>
 							{{else}}
 								<tr>
 								<td>Не е качено нищо</td>
@@ -140,63 +140,7 @@
 							</tbody>
 						</table>
 						
-						<h3>Проектна задача</h3>
-						<table class="task-table">
-							<colgroup><col>
-							</colgroup>
-							<tbody>
-							{{if .Project}}
-								{{range $index, $element := .Project}}
-									<tr>
-								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
-										<td><a href="{{$element.Link}}">Отвори</a> </td>
-										<td>{{$element.Description}}</td>
-										<td><form method="post" action="/tasks.html">
-									<input type="hidden" name="operation" value="delete" />
-									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
-									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
-									</form></td>
-									</tr>
-								{{end}}
-								<tr><td></td><td></td><td></td><td></td></tr>
-							{{else}}
-								<tr>
-								<td>Не е качено нищо</td>
-								</tr>
-								<tr><td></td> </tr>
-							{{end}}
-							</tbody>
-						</table>
-						
-						
-						<h3>Робо мисия</h3>
-						<table class="task-table">
-							<colgroup><col>
-							</colgroup>
-							<tbody>
-							{{if .Robot}}
-								{{range $index, $element := .Robot}}
-									<tr>
-								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
-										<td><a href="{{$element.Link}}">Отвори</a> </td>
-										<td>{{$element.Description}}</td>
-									<td><form method="post" action="/tasks.html">
-									<input type="hidden" name="operation" value="delete" />
-									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
-									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
-									</form></td>
-									</tr>
-								{{end}}
-								<tr><td></td><td></td><td></td><td></td></tr>
-							{{else}}
-								<tr>
-								<td>Не е качено нищо</td>
-								</tr>
-								<tr><td></td> </tr>
-							{{end}}
-							</tbody>
-						</table>
-						<!--table class="task-table">
+					<!--table class="task-table">
 							<colgroup><col>
 							</colgroup>
 							<tbody>

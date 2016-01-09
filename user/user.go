@@ -33,3 +33,8 @@ func Authenticate(username, password string) bool {
 	pass, found := readUsers()[username]
 	return found && pass == password
 }
+
+func ContainsUser(username string) bool {
+	_, found := readUsers()[username]
+	return found
+}
