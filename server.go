@@ -87,7 +87,6 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin.html", http.StatusFound)
 		return
 	}
-	t, _ := template.ParseFiles("admin.html")
 	if r.Method == "POST" {
 		r.ParseForm()
 		fmt.Println("id", r.Form["id"])
@@ -95,7 +94,13 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("school", r.Form["school"])
 		teams.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
 	}
-	t.Execute(w, teams.GetTeamsInfo())
+	if r.URL.Query().Get("page") == "registered_teams" {
+		t, _ := template.ParseFiles("admin_registered_teams.html")
+		t.Execute(w, teams.GetTeams())
+	} else {
+		t, _ := template.ParseFiles("admin.html")
+		t.Execute(w, teams.GetTeamsIdInfo())
+	}
 }
 
 func handleTeam(w http.ResponseWriter, r *http.Request) {

@@ -110,24 +110,20 @@
 						</div>
 					</div>
 					<div class="grid_8">
-						<h3>Team Ids</h3>
+						<h3>Регистрирани отбори</h3>
 						<table class="task-table">
 							<colgroup><col>
 							</colgroup>
 							<tbody>
               {{if .}}
-              <tr><th>ИД</th><th>Град</th><th>Училище</th><th></th><th></th></tr>
+              <tr><th>ИД</th><th>Отбор</th><th>Град</th><th>Училище</th><th></th></tr>
 								{{range $index, $element := .}}
 								<tr>
-							 		<td contenteditable="true" >{{$element.Id}}</td>
+							 		<td>{{$element.Id}}</td>
+							 		<td>{{$element.Name}}</td>
 									<td>{{$element.City}}</td>
 									<td>{{$element.School}}</td>
-                  {{if $element.Registered}}
-                  <td><span class="fa fa-check" style="font-size:18pt" ></span></td>
-                  {{else}}
-                  <td><span class="fa fa-close" style="font-size:18pt" ></span></td>
-                  {{end}}
-              		<td><form method="post" action="/tasks.html">
+              		<td><form method="post" action="#">
 									<input type="hidden" name="operation" value="delete" />
 									<input type="hidden" name="id" value="{{$element.Id}}" />
 									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
@@ -137,7 +133,7 @@
                 <tr><td></td><td></td><td></td><td></td><td></td></tr>
 							{{else}}
 								<tr>
-								<td>Не е качено нищо</td>
+								<td>Няма регистрирани отбири</td>
 								</tr>
 								<tr><td></td> </tr>
 							{{end}}

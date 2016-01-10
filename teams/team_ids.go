@@ -72,7 +72,7 @@ type TeamIdInfo struct {
 	Registered bool
 }
 
-func GetTeamsInfo() []TeamIdInfo {
+func GetTeamsIdInfo() []TeamIdInfo {
 	r := make([]TeamIdInfo, 0)
 	tt := GetTeamIds()
 	m := GetRegisteredIds()
