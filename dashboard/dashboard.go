@@ -15,9 +15,6 @@ func GetDashboard(user string) Dashboard {
 		Project: make([]hw.Homework, 0),
 		Robot:   make([]hw.Homework, 0)}
 	for _, homework := range homeworks {
-		if homework.Link == "" {
-			homework.Link = "/download?user=" + user + "&file=" + homework.Filename
-		}
 		if homework.Task == "team" {
 			dashboard.Team = append(dashboard.Team, homework)
 		} else if homework.Task == "project" {

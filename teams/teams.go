@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"robotikazabulgaria/admin"
 	"robotikazabulgaria/ws"
 )
 
@@ -41,11 +40,11 @@ func RegisterTeam(team, pass1, pass2, city, school, id string) error {
 
 func checkTeamNameIsValid(team string) error {
 	if len(team) == 0 {
-		return errors.New("Team name is not set")
+		return errors.New("Не е въведено име на отбора")
 	} else if len(team) < 3 {
-		return errors.New("Team name length should be at least 3 symbols")
-	} else if len(team) > 20 {
-		return errors.New("Team name length should not exceed 20 symbols")
+		return errors.New("Името на отбора трябва да е поне 3 символа")
+	} else if len(team) > 30 {
+		return errors.New("Името на отбора не може да надвишава 30 символа")
 	} else {
 		return nil
 	}
@@ -53,13 +52,13 @@ func checkTeamNameIsValid(team string) error {
 
 func checkPassIsValid(pass1, pass2 string) error {
 	if pass1 != pass2 {
-		return errors.New("Passwords do not match")
+		return errors.New("Паролите не съвпадат")
 	} else if len(pass1) == 0 {
-		return errors.New("Password is not set")
+		return errors.New("Не е въведена парола")
 	} else if len(pass1) < 8 {
-		return errors.New("Password length should be at least 8 symbols")
+		return errors.New("Паролата трябва да е поне 8 символа")
 	} else if len(pass1) > 50 {
-		return errors.New("Password length should not exceed 50 symbols")
+		return errors.New("Паролата не може да надвишава 50 символа")
 	} else {
 		return nil
 	}
@@ -67,11 +66,11 @@ func checkPassIsValid(pass1, pass2 string) error {
 
 func checkCityIsValid(city string) error {
 	if len(city) == 0 {
-		return errors.New("City is not set")
+		return errors.New("Не е въведен град")
 	} else if len(city) < 3 {
-		return errors.New("City length should be at least 3 symbols")
-	} else if len(city) > 20 {
-		return errors.New("City length should not exceed 20 symbols")
+		return errors.New("Името на града трябва да е поне 3 символа")
+	} else if len(city) > 30 {
+		return errors.New("Името на града не може да надвишава 30 символа")
 	} else {
 		return nil
 	}
@@ -79,11 +78,11 @@ func checkCityIsValid(city string) error {
 
 func checkSchoolIsValid(school string) error {
 	if len(school) == 0 {
-		return errors.New("School is not set")
+		return errors.New("Не е въведено училище")
 	} else if len(school) < 3 {
-		return errors.New("School length should be at least 3 symbols")
-	} else if len(school) > 20 {
-		return errors.New("School length should not exceed 20 symbols")
+		return errors.New("Името на училището трябва да е поне 3 символа")
+	} else if len(school) > 50 {
+		return errors.New("Името на училището не трябва да надвишава 50 символа")
 	} else {
 		return nil
 	}
@@ -91,7 +90,7 @@ func checkSchoolIsValid(school string) error {
 
 func checkIdIsValid(id string) error {
 	if len(id) == 0 {
-		return errors.New("Identification number is not set")
+		return errors.New("Не е въведен идентификационен номер")
 	} else {
 		return nil
 	}
@@ -101,7 +100,7 @@ func checkTeamNameIsUnique(team string) error {
 	teams := GetTeams()
 	for _, t := range teams {
 		if t.Name == team {
-			return errors.New("Team name already exists")
+			return errors.New("Вече съществува отбор с това име")
 		}
 	}
 	return nil
@@ -111,10 +110,10 @@ func checkIdIsOK(id string) error {
 	teams := GetTeams()
 	for _, t := range teams {
 		if t.Id == id {
-			return errors.New("Id is not valid")
+			return errors.New("Идентификационият номер не е валиден")
 		}
 	}
-	teamIds := admin.GetTeamIds()
+	teamIds := GetTeamIds()
 	for _, t := range teamIds {
 		if t.Id == id {
 			return nil
@@ -155,4 +154,13 @@ func Authenticate(username, password string) bool {
 		}
 	}
 	return false
+}
+
+func GetRegisteredIds() map[string]bool {
+	m := make(map[string]bool)
+	tt := GetTeams()
+	for _, t := range tt {
+		m[t.Id] = true
+	}
+	return m
 }

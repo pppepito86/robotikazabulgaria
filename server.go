@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,7 +15,6 @@ import "io"
 import "os"
 
 import (
-	"robotikazabulgaria/admin"
 	"robotikazabulgaria/dashboard"
 	"robotikazabulgaria/hw"
 	"robotikazabulgaria/session"
@@ -53,7 +54,7 @@ func handleGuest(w http.ResponseWriter, r *http.Request) {
 				http.Redirect(w, r, "/home.html", http.StatusFound)
 			} else {
 				fmt.Println("login failed")
-				sendError(w, r, "login failed", "/login.html")
+				sendError(w, r, "Грешни данни за вход", "/login.html")
 			}
 		} else {
 			t, _ := template.ParseFiles("login.html")
@@ -92,9 +93,9 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("id", r.Form["id"])
 		fmt.Println("city", r.Form["city"])
 		fmt.Println("school", r.Form["school"])
-		admin.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
+		teams.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
 	}
-	t.Execute(w, admin.GetTeamIds())
+	t.Execute(w, teams.GetTeamsInfo())
 }
 
 func handleTeam(w http.ResponseWriter, r *http.Request) {
@@ -185,8 +186,10 @@ func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 			return hw.Homework{}, err
 		}
 	}
+	t := time.Now().UTC()
 	defer file.Close()
-	fp := ws.GetFilePath(getUser(*r), header.Filename)
+	fn := strconv.FormatInt(t.UnixNano(), 16) + filepath.Ext(header.Filename)
+	fp := ws.GetFilePath(getUser(*r), fn)
 	out, err := os.Create(fp)
 	if err != nil {
 		fmt.Fprintf(w, "Unable to create the file for writing. Check your write access privilege")
@@ -198,7 +201,7 @@ func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 		fmt.Fprintln(w, err)
 		return hw.Homework{}, err
 	}
-	return hw.Homework{header.Filename, r.Form["link"][0], r.Form["description"][0], r.Form["task"][0], time.Now().UTC()}, nil
+	return hw.Homework{header.Filename, "/download?user=" + getUser(*r) + "&file=" + fn, r.Form["description"][0], r.Form["task"][0], t}, nil
 }
 func getUser(r http.Request) string {
 	cookie := getSessionIdCookie(r)

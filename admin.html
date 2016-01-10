@@ -123,6 +123,11 @@
 							 		<td contenteditable="true" >{{$element.Id}}</td>
 									<td>{{$element.City}}</td>
 									<td>{{$element.School}}</td>
+                  {{if $element.Registered}}
+                  <td><span class="fa fa-check" style="font-size:18pt" ></span></td>
+                  {{else}}
+                  <td><span class="fa fa-close" style="font-size:18pt" ></span></td>
+                  {{end}}
               		<td><form method="post" action="/tasks.html">
 									<input type="hidden" name="operation" value="delete" />
 									<input type="hidden" name="id" value="{{$element.Id}}" />
@@ -130,7 +135,7 @@
 									</form></td>
 								</tr>
 								{{end}}
-                <tr><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td></tr>
 							{{else}}
 								<tr>
 								<td>Не е качено нищо</td>

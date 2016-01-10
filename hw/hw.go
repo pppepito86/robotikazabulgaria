@@ -37,7 +37,6 @@ func writeHomeworks(user string, homework []Homework) {
 func AddHomework(user string, homework Homework) {
 	l.Lock()
 	defer l.Unlock()
-	homework.Time = time.Now().UTC()
 	homeworks := ReadHomeworks(user)
 	homeworks = append(homeworks, homework)
 	writeHomeworks(user, homeworks)
