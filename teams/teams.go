@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 	"robotikazabulgaria/ws"
+	"strings"
+	"time"
 )
 
 type Team struct {
@@ -15,6 +17,7 @@ type Team struct {
 	City   string
 	School string
 	Id     string
+	Time   time.Time
 }
 
 func RegisterTeam(team, pass1, pass2, city, school, id string) error {
@@ -33,7 +36,7 @@ func RegisterTeam(team, pass1, pass2, city, school, id string) error {
 	} else if err := checkIdIsOK(id); err != nil {
 		return err
 	}
-	t := Team{team, pass1, city, school, id}
+	t := Team{team, pass1, city, school, id, time.Now()}
 	AddTeam(t)
 	return nil
 }
@@ -45,9 +48,15 @@ func checkTeamNameIsValid(team string) error {
 		return errors.New("Името на отбора трябва да е поне 3 символа")
 	} else if len(team) > 30 {
 		return errors.New("Името на отбора не може да надвишава 30 символа")
-	} else {
-		return nil
 	}
+
+	for _, l := range team {
+		if (l >= 'a' && l <= 'z') || (l >= 'A' && l <= 'Z') {
+			return nil
+		}
+	}
+
+	return errors.New("Нямате букви в името на отбора")
 }
 
 func checkPassIsValid(pass1, pass2 string) error {
@@ -97,11 +106,15 @@ func checkIdIsValid(id string) error {
 }
 
 func checkTeamNameIsUnique(team string) error {
+	team = strings.ToLower(team)
 	teams := GetTeams()
 	for _, t := range teams {
-		if t.Name == team {
+		if strings.ToLower(t.Name) == team {
 			return errors.New("Вече съществува отбор с това име")
 		}
+	}
+	if team == "pesho" || team == "marin" || team == "monica" {
+		return errors.New("Вече съществува отбор с това име")
 	}
 	return nil
 }
@@ -163,4 +176,14 @@ func GetRegisteredIds() map[string]bool {
 		m[t.Id] = true
 	}
 	return m
+}
+
+func GetTeamId(loginname string) string {
+	teams := GetTeams()
+	for _, t := range teams {
+		if t.Name == loginname || t.Id == loginname {
+			return t.Id
+		}
+	}
+	return ""
 }

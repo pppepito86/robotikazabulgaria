@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strconv"
@@ -111,13 +112,17 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/home.html", http.StatusFound)
 		return
 	}
-	if r.URL.Path == "/upload" {
+	if r.URL.Path == "/tasks.html" && r.Method == "POST" {
 		homework, err := upload(w, r)
+		fmt.Println("Upload error", err)
 		if err == nil {
 			hw.AddHomework(getUser(*r), homework)
+			http.Redirect(w, r, "/tasks.html", http.StatusFound)
+			return
+		} else {
+			sendError(w, r, err.Error(), "/tasks.html")
+			return
 		}
-		http.Redirect(w, r, "/tasks.html", http.StatusFound)
-		return
 	}
 	if r.URL.Path == "/download" {
 		download(w, r)
@@ -155,12 +160,12 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 func register(r *http.Request) error {
 	r.ParseForm()
 	return teams.RegisterTeam(
-		r.Form["username"][0],
+		strings.TrimSpace(r.Form["username"][0]),
 		r.Form["password1"][0],
 		r.Form["password2"][0],
-		r.Form["city"][0],
-		r.Form["school"][0],
-		r.Form["identification_number"][0])
+		strings.TrimSpace(r.Form["city"][0]),
+		strings.TrimSpace(r.Form["school"][0]),
+		strings.TrimSpace(r.Form["identification_number"][0]))
 }
 
 func sendError(w http.ResponseWriter, r *http.Request, msg string, page string) {
@@ -183,12 +188,26 @@ func download(w http.ResponseWriter, r *http.Request) {
 }
 
 func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
+	fmt.Println("ContentLength", r.Header.Get("Content-Length"))
+	len, _ := strconv.ParseInt(r.Header.Get("Content-Length"), 10, 64)
+	fmt.Println("Len", len)
+	if len > 20*1024*1024 {
+		return hw.Homework{}, errors.New("File should not exceed 20MB")
+	}
+	r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
 	file, header, err := r.FormFile("file")
 	if err != nil {
+		if strings.Contains(err.Error(), "body too large") {
+			return hw.Homework{}, errors.New("File should not exceed 20MB")
+		}
 		if strings.TrimSpace(r.Form["link"][0]) != "" {
 			return hw.Homework{"", r.Form["link"][0], r.Form["description"][0], r.Form["task"][0], time.Now().UTC()}, nil
 		} else {
-			return hw.Homework{}, err
+			return hw.Homework{}, errors.New("You should either select a file or enter link")
+		}
+	} else {
+		if strings.TrimSpace(r.Form["link"][0]) != "" {
+			return hw.Homework{}, errors.New("You cannot both select a file and enter link")
 		}
 	}
 	t := time.Now().UTC()
@@ -197,14 +216,15 @@ func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 	fp := ws.GetFilePath(getUser(*r), fn)
 	out, err := os.Create(fp)
 	if err != nil {
-		fmt.Fprintf(w, "Unable to create the file for writing. Check your write access privilege")
-		return hw.Homework{}, err
+		fmt.Println(err)
+		return hw.Homework{}, errors.New("Problems writing the file. Contact system admins for help")
 	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
 	if err != nil {
-		fmt.Fprintln(w, err)
-		return hw.Homework{}, err
+		fmt.Println(err)
+		return hw.Homework{}, errors.New("Problems writing the file. Contact system admins for help")
+
 	}
 	return hw.Homework{header.Filename, "/download?user=" + getUser(*r) + "&file=" + fn, r.Form["description"][0], r.Form["task"][0], t}, nil
 }
@@ -254,6 +274,9 @@ func login(w http.ResponseWriter, r http.Request, username string, password stri
 	if !user.Authenticate(username, password) &&
 		!teams.Authenticate(username, password) {
 		return false
+	}
+	if teams.Authenticate(username, password) {
+		username = teams.GetTeamId(username)
 	}
 	val := username + "-" + user.RandomString()
 	cookie := http.Cookie{Name: "session.id", Value: val}
