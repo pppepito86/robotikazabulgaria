@@ -71,25 +71,27 @@
 							<li><a href="#"></a></li>
 							<li><a href="admin.html?page=team_ids" >ИД на отборите</a></li>
 							<li><a href="admin.html?page=registered_teams" >Регистрирани отбори</a></li>
-							<li><a href="admin.html?page=tasks" >Tasks</a></li>
+							<li><a href="admin.html?page=tasks" >Робо мисия</a></li>
 							<br />
 							<li><a href="docs/field.pdf" >Поле</a></li>
 							<li><a href="docs/rules.pdf" >Правила</a></li>
 						</ul>
 						<div class="block3">
-							<p><h3>Предаване</h3> </p>
-							<form action="/admin.html" method="post" >
-								<input type="hidden" name="operation" value="addtask" />
-
+							<p><h3>Task</h3> </p>
+							<form action="/admin.html?page=tasks" method="post" >
 								<table class="submit-table">
-								<tr><td><label for="type">Тип:</label></td><td><select id="type" style="width:235px"	 name="task">
-								  <option value="team_id">Team Id</option>
-								</select></td> </tr>
-								
-								<tr><td><label for="id">Id:</label></td><td><input type="text" style="width:232px" name="id" id="id" /></td> </tr>
-								<tr><td><label for="city">City:</label></td><td><input type="text" style="width:232px" name="city" id="city" /></td> </tr>
-								<tr><td><label for="school">School:</label></td><td><input type="text" style="width:232px" name="school" id="school" /></td> </tr>
+								<tr><td><label for="id">Name:</label></td><td><input type="text" style="width:232px" name="name" id="id" /></td> </tr>
 
+								<tr><td><label for="type">Type:</label></td><td><select id="type" style="width:235px" name="type">
+								  <option value="team">Team</option>
+								  <option value="project">Project</option>
+								  <option value="robot">Robot</option>
+								</select></td> </tr>
+
+								<tr><td><label for="text">Link name:</label></td><td><input type="text" style="width:232px" name="text" id="id" /></td> </tr>
+								<tr><td><label for="file">Файл:</label></td><td><input type="file" name="file" id="file" /></td> </tr>
+								<tr><td><label for="link">Линк:</label></td><td><input type="text" style="width:232px" name="link" id="link" /></td> </tr>
+								
 								</table>
 								
 								<!--

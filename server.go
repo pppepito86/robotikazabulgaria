@@ -16,6 +16,7 @@ import "io"
 import "os"
 
 import (
+	"robotikazabulgaria/admin"
 	"robotikazabulgaria/dashboard"
 	"robotikazabulgaria/hw"
 	"robotikazabulgaria/session"
@@ -88,17 +89,23 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin.html", http.StatusFound)
 		return
 	}
-	if r.Method == "POST" {
-		r.ParseForm()
-		fmt.Println("id", r.Form["id"])
-		fmt.Println("city", r.Form["city"])
-		fmt.Println("school", r.Form["school"])
-		teams.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
-	}
 	if r.URL.Query().Get("page") == "registered_teams" {
 		t, _ := template.ParseFiles("admin_registered_teams.html")
 		t.Execute(w, teams.GetTeams())
+	} else if r.URL.Query().Get("page") == "tasks" {
+		if r.Method == "POST" {
+			admin.UploadTask(w, r)
+		}
+		t, _ := template.ParseFiles("admin_tasks.html")
+		t.Execute(w, teams.GetTeams())
 	} else {
+		if r.Method == "POST" {
+			r.ParseForm()
+			fmt.Println("id", r.Form["id"])
+			fmt.Println("city", r.Form["city"])
+			fmt.Println("school", r.Form["school"])
+			teams.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
+		}
 		t, _ := template.ParseFiles("admin.html")
 		t.Execute(w, teams.GetTeamsIdInfo())
 	}

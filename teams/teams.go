@@ -51,7 +51,7 @@ func checkTeamNameIsValid(team string) error {
 	}
 
 	for _, l := range team {
-		if (l >= 'a' && l <= 'z') || (l >= 'A' && l <= 'Z') {
+		if (l >= 'a' && l <= 'z') || (l >= 'A' && l <= 'Z') || (l >= 'а' && l <= 'я') || (l >= 'А' && l <= 'Я') {
 			return nil
 		}
 	}
