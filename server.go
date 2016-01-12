@@ -120,15 +120,19 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path == "/tasks.html" && r.Method == "POST" {
-		homework, err := upload(w, r)
-		fmt.Println("Upload error", err)
-		if err == nil {
-			hw.AddHomework(getUser(*r), homework)
-			http.Redirect(w, r, "/tasks.html", http.StatusFound)
-			return
-		} else {
-			sendError(w, r, err.Error(), "/tasks.html")
-			return
+		r.ParseForm()
+		fmt.Println("len", r.Form["operation"])
+		if len(r.Form["operation"]) == 0 {
+			homework, err := upload(w, r)
+			fmt.Println("Upload error", err)
+			if err == nil {
+				hw.AddHomework(getUser(*r), homework)
+				http.Redirect(w, r, "/tasks.html", http.StatusFound)
+				return
+			} else {
+				sendError(w, r, err.Error(), "/tasks.html")
+				return
+			}
 		}
 	}
 	if r.URL.Path == "/download" {

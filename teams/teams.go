@@ -187,3 +187,13 @@ func GetTeamId(loginname string) string {
 	}
 	return ""
 }
+
+func GetTeamName(id string) string {
+	teams := GetTeams()
+	for _, t := range teams {
+		if t.Id == id {
+			return t.Name
+		}
+	}
+	return ""
+}
