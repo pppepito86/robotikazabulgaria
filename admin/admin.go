@@ -3,13 +3,13 @@ package admin
 import (
 	"encoding/json"
 	"errors"
-	"fll/ws"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
+	"robotikazabulgaria/ws"
 	"strconv"
 	"time"
 )
