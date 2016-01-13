@@ -90,8 +90,17 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/index.html", http.StatusFound)
 		return
 	}
-	if r.URL.Path != "/admin.html" {
+	if r.URL.Path == "/download" {
+		download(w, r)
+		return
+	}
+	if r.URL.Path != "/admin.html" && r.URL.Path != "/points.html"{
 		http.Redirect(w, r, "/admin.html", http.StatusFound)
+		return
+	}
+	if r.URL.Path == "/points.html" {
+		t, _ := template.ParseFiles("admin_points.html")
+		t.Execute(w, admin.GetJudgeDashboard(r.URL.Query().Get("page")))
 		return
 	}
 	if r.URL.Query().Get("page") == "registered_teams" {
@@ -103,7 +112,7 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		}
 		t, _ := template.ParseFiles("admin_tasks.html")
 		t.Execute(w, teams.GetTeams())
-	} else {
+		} else {
 		if r.Method == "POST" {
 			r.ParseForm()
 			fmt.Println("id", r.Form["id"])
@@ -201,7 +210,7 @@ func sendError(w http.ResponseWriter, r *http.Request, msg string, page string) 
 func download(w http.ResponseWriter, r *http.Request) {
 	user := r.URL.Query().Get("user")
 	file := r.URL.Query().Get("file")
-	if user != getUser(*r) {
+	if user != getUser(*r) && !isAdmin(*r) {
 		return
 	}
 

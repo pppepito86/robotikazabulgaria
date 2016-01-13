@@ -10,6 +10,8 @@ import (
 	"os"
 	"path/filepath"
 	"robotikazabulgaria/ws"
+	"robotikazabulgaria/teams"
+	"robotikazabulgaria/hw"
 	"strconv"
 	"time"
 )
@@ -74,3 +76,41 @@ func writeTasks(tasks []Task) {
 	os.Create(file)
 	ioutil.WriteFile(file, json, 0700)
 }
+
+type Homework struct {
+	Link string
+	Description string
+}
+
+type TeamHomeworks struct {
+	Id string
+	Name string
+	Homeworks []Homework
+}
+
+type JudgeDashboard struct {
+	Task string
+	Homeworks []TeamHomeworks
+}
+
+func GetJudgeDashboard(task string) JudgeDashboard {
+	if task != "project" && task != "robot" {
+		task = "team"
+	}
+	jd := JudgeDashboard{Task: task, Homeworks: make([]TeamHomeworks, 0)}
+	tt := teams.GetTeams()
+	for _, t := range tt {
+		th := TeamHomeworks{Id: t.Id, Name: t.Name, Homeworks: make([]Homework, 0)}
+		hws := hw.ReadHomeworks(t.Id)
+		for _, hw := range hws {
+			if hw.Task == task {
+				h := Homework{Link:hw.Link, Description:hw.Description}
+				th.Homeworks = append(th.Homeworks, h)
+			}
+		}
+		jd.Homeworks = append(jd.Homeworks, th)
+	}
+	fmt.Println("judge dashboar", jd)
+	return jd
+}
+	
