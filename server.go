@@ -85,6 +85,11 @@ func handleGuest(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleAdmin(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/index.html" {
+		logout(w, *r)
+		http.Redirect(w, r, "/index.html", http.StatusFound)
+		return
+	}
 	if r.URL.Path != "/admin.html" {
 		http.Redirect(w, r, "/admin.html", http.StatusFound)
 		return
@@ -112,6 +117,11 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleTeam(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/index.html" {
+		logout(w, *r)
+		http.Redirect(w, r, "/index.html", http.StatusFound)
+		return
+	}
 	if r.URL.Path == "/login.html" ||
 		r.URL.Path == "/register.html" ||
 		r.URL.Path == "/index.html" ||
@@ -295,4 +305,11 @@ func login(w http.ResponseWriter, r http.Request, username string, password stri
 	session.SetAttribute(val, username)
 	fmt.Println("set session cookie", val)
 	return true
+}
+
+func logout(w http.ResponseWriter, r http.Request) {
+	val := getSessionIdCookie(r).Value
+	session.RemoveAttribute(val)
+	cookie := http.Cookie{Name: "session.id", Value: val, MaxAge: -1}
+	http.SetCookie(w, &cookie)
 }

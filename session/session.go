@@ -21,3 +21,7 @@ func ContainsKey(key string) bool {
 	_, logged := getSessionMap()[key]
 	return logged
 }
+
+func RemoveAttribute(key string) {
+	delete(sessionMap, key)
+}
