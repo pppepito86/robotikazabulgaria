@@ -17,6 +17,7 @@
 		<!-- <script src="js/jquery.ui.totop.js"></script> -->
 		<script src="js/jquery.equalheights.js"></script>
 		<script src="js/jquery.mobilemenu.js"></script>
+		<script src="js/admin.js"></script>
 
 		<script>
 			$(document).ready(function(){
@@ -76,11 +77,13 @@
 					</div>
 					<div class="grid_8">
             <h3>{{.Task}}</h3>
+            <input type="hidden" id="task" value="{{.Task}}" />
 						<table class="task-table">
 							<colgroup><col>
 							</colgroup>
 							<tbody>
 							{{if .Homeworks}}
+              <tr><th>ИД</th><th>Отбор</th><th></th><th></th><th>Точки</th><th>Коментар</th></tr>
 								{{range $index, $element := .Homeworks}}
 								<tr>
 							 		<td>{{$element.Id}}</td>
@@ -95,9 +98,11 @@
                     {{$element2.Description}}<br /> 
                     {{end}}
                   </td>
+                  <td><input type="text" size="5" id="text_{{$element.Id}}" value="{{$element.Mark}}" onblur="changePoints(this);" /></td>
+                  <td><textarea cols="20" rows="2" id="area_{{$element.Id}}" onblur="changePoints(this);" >{{$element.Comment}}</textarea></td>
 								</tr>
 								{{end}}
-								<tr><td></td><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
 							{{else}}
 								<tr>
 								<td>Не е качено нищо</td>

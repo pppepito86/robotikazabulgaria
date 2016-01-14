@@ -86,6 +86,8 @@ type TeamHomeworks struct {
 	Id string
 	Name string
 	Homeworks []Homework
+	Mark string
+	Comment string
 }
 
 type JudgeDashboard struct {
@@ -93,14 +95,18 @@ type JudgeDashboard struct {
 	Homeworks []TeamHomeworks
 }
 
-func GetJudgeDashboard(task string) JudgeDashboard {
+func GetJudgeDashboard(username string, task string) JudgeDashboard {
 	if task != "project" && task != "robot" {
 		task = "team"
 	}
 	jd := JudgeDashboard{Task: task, Homeworks: make([]TeamHomeworks, 0)}
 	tt := teams.GetTeams()
+	tms := GetTeamMarks(username)
+	
 	for _, t := range tt {
-		th := TeamHomeworks{Id: t.Id, Name: t.Name, Homeworks: make([]Homework, 0)}
+		tm := tms[t.Id]
+		m := tm.Marks[task]
+		th := TeamHomeworks{Id: t.Id, Name: t.Name, Homeworks: make([]Homework, 0), Mark: m.Points, Comment: m.Comment}
 		hws := hw.ReadHomeworks(t.Id)
 		for _, hw := range hws {
 			if hw.Task == task {
@@ -113,4 +119,67 @@ func GetJudgeDashboard(task string) JudgeDashboard {
 	fmt.Println("judge dashboar", jd)
 	return jd
 }
+
+type Mark struct {
+	TaskId string
+	Points string
+	Comment string
+}
+
+type TeamMark struct {
+	Marks map[string]Mark
+}
+
+func GetTeamMarks(username string) map[string]TeamMark {
+	var m map[string]TeamMark
+	file := ws.ReadFile(username, "points.json")
+	err := json.Unmarshal(file, &m)
+	if err != nil {
+		m = make(map[string]TeamMark)
+	}
+	fmt.Println(m)
+	return m
+}
+
+func GetTeamMark(username string, teamid string, taskname string) (string, string) { 
+	tms := GetTeamMarks(username)
+	t := tms[teamid]
+	m := t.Marks[taskname]
+	return m.Points, m.Comment
+}
+
+func writeTeamMarks(username string, m map[string]TeamMark) {
+	file := ws.GetFilePath(username, "points.json")
+	json, _ := json.Marshal(m)
+	os.Create(file)
+	ioutil.WriteFile(file, json, 0700)
+}
 	
+func UpdatePoints(r *http.Request, username string) {
+	r.ParseForm()
+	teamId := r.Form["id"][0]
+	task := r.Form["task"][0]
+	value := r.Form["value"][0]
+	changeType := r.Form["type"][0]
+	if teams.GetTeamId(teamId) == "" {
+		return
+	}
+	teamMarks := GetTeamMarks(username)
+	tm, exist := teamMarks[teamId]
+	if !exist {
+		teamMarks[teamId] = TeamMark{Marks: make(map[string]Mark)}
+	}
+	tm, _ = teamMarks[teamId]
+	m, exist := tm.Marks[task]
+	if !exist {
+		tm.Marks[task] = Mark{TaskId: task}
+	}
+	m, _ = tm.Marks[task]
+	if changeType == "text" {
+		m.Points = value
+	} else {
+		m.Comment = value
+	}
+	tm.Marks[task] = m
+	writeTeamMarks(username, teamMarks)
+}

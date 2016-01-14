@@ -99,8 +99,12 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path == "/points.html" {
+		if r.Method == "POST" {
+			admin.UpdatePoints(r, getUser(*r))
+			return
+		}
 		t, _ := template.ParseFiles("admin_points.html")
-		t.Execute(w, admin.GetJudgeDashboard(r.URL.Query().Get("page")))
+		t.Execute(w, admin.GetJudgeDashboard(getUser(*r), r.URL.Query().Get("page")))
 		return
 	}
 	if r.URL.Query().Get("page") == "registered_teams" {
