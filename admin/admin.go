@@ -183,3 +183,50 @@ func UpdatePoints(r *http.Request, username string) {
 	tm.Marks[task] = m
 	writeTeamMarks(username, teamMarks)
 }
+
+type TeamResults struct {
+	Id string
+	Name string
+	Stars []int
+	NoStars []int
+}
+
+func GetResults() []TeamResults {
+	tmrs := make([]TeamResults, 0)
+	//tmrs = append(tmrs, TeamResults{Id: "Id", Name: "Otbor", Results: []string{"A", "B", "C"}})
+
+	tt := teams.GetTeams()
+	tms := GetTeamMarks("pesho")
+	
+	for _, t := range tt {
+		tm := tms[t.Id]
+		tr := TeamResults{Id: t.Id, Name: t.Name, Stars: make([]int, 0), NoStars: make([]int, 0)}
+
+		v, _ := strconv.Atoi(tm.Marks["team"].Points)
+		if v >= 3 {
+			v = 3
+		}
+		tr.Stars = append(tr.Stars, v)
+		tr.NoStars = append(tr.NoStars, 3-v)
+
+		v, _ = strconv.Atoi(tm.Marks["project"].Points)
+		if v >= 3 {
+			v = 3
+		}
+		tr.Stars = append(tr.Stars, v)
+		tr.NoStars = append(tr.NoStars, 3-v)
+
+		v, _ = strconv.Atoi(tm.Marks["robot"].Points)
+		if v >= 3 {
+			v = 3
+		}
+		tr.Stars = append(tr.Stars, v)
+		tr.NoStars = append(tr.NoStars, 3-v)
+
+		tmrs = append(tmrs, tr)
+	}
+	fmt.Println("results", tmrs)
+	return tmrs
+}
+
+

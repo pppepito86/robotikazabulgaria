@@ -94,6 +94,11 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		download(w, r)
 		return
 	}
+	if r.URL.Path == "/results.html" {
+		t, _ := template.ParseFiles("results.html")
+		t.Execute(w, admin.GetResults())
+		return
+	}
 	if r.URL.Path != "/admin.html" && r.URL.Path != "/points.html"{
 		http.Redirect(w, r, "/admin.html", http.StatusFound)
 		return
