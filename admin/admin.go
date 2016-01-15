@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"sort"
 	"path/filepath"
 	"robotikazabulgaria/ws"
 	"robotikazabulgaria/teams"
@@ -191,8 +192,22 @@ type TeamResults struct {
 	NoStars []int
 }
 
-func GetResults() []TeamResults {
-	tmrs := make([]TeamResults, 0)
+type Results []TeamResults
+
+func (r Results) Len() int {
+	return len(r)
+}
+
+func (r Results) Swap(i, j int) {
+	r[i], r[j] = r[j], r[i]
+}
+
+func (r Results) Less(i, j int) bool {
+	return r[i].Stars[0]+r[i].Stars[1]+r[i].Stars[2] > r[j].Stars[0]+r[j].Stars[1]+r[j].Stars[2]
+}
+
+func GetResults() Results {
+	tmrs := make(Results, 0)
 	//tmrs = append(tmrs, TeamResults{Id: "Id", Name: "Otbor", Results: []string{"A", "B", "C"}})
 
 	tt := teams.GetTeams()
@@ -226,6 +241,7 @@ func GetResults() []TeamResults {
 		tmrs = append(tmrs, tr)
 	}
 	fmt.Println("results", tmrs)
+	sort.Sort(tmrs)
 	return tmrs
 }
 
