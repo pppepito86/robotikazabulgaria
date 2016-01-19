@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"mime/multipart"
 	"os"
 	"sort"
 	"path/filepath"
@@ -14,61 +15,333 @@ import (
 	"robotikazabulgaria/teams"
 	"robotikazabulgaria/hw"
 	"strconv"
+	"strings"
 	"time"
 )
 
 type Task struct {
 	Name      string
-	Type      string
+	DisplayName      string
+	Category      string
 	Time      time.Time
 	Documents []Document
 }
 
 type Document struct {
 	Link string
-	Text string
+	DocType string
+	Time time.Time
 }
+
+type Challenge struct {
+	Id string
+	Name string
+	StartTime time.Time
+	EndTime time.Time
+	CreateTime time.Time
+	Tasks []Task
+	AdditionalDocuments []Document
+}
+
+type Challenges struct {
+	ActiveChallenge string
+	Challenges []Challenge
+}
+
+type PageChallenges struct {
+	CurrentIndex int
+	AllChallenges Challenges
+}
+
+func GetPageChallenges(id string) PageChallenges {
+	fmt.Println("challenge id", id)
+	challenges := GetChallenges()
+	index := -1
+	if len(challenges.Challenges) > 0 {
+		index = 0
+	}
+	for i, element := range challenges.Challenges {
+		fmt.Println("***challenge id", id, element.Id)
+		if element.Id == id {
+			index = i
+			break
+		}
+	}
+	return PageChallenges{
+		CurrentIndex: index,
+		AllChallenges: *challenges,
+	}
+}
+
+func UpdateChallenge(r *http.Request) {
+	fmt.Println("updating challenge")
+	h := r.Header.Get("Content-Type")
+	fmt.Println("header", h)
+	if !strings.HasPrefix(h, "multipart") {
+		r.ParseForm() 
+		fmt.Println("no error")
+		if len(r.Form["operation"]) != 1 {
+			return
+		}
+		operation := r.Form["operation"][0]
+		fmt.Println("operation", operation)
+		if operation == "new_challenge" {
+			createChallenge(r)
+		} else if operation == "challenge_task" {
+			createTask1(r)
+		} else if operation == "activate_challenge" {
+			activateChallenge(r)
+		}
+		return
+	}
+
+	fmt.Println("error")
+	file, header, _ := r.FormFile("file")
+	if len(r.Form["operation"]) != 1 {
+		return
+	}
+	operation := r.Form["operation"][0]
+	fmt.Println("operation", operation)
+	if operation == "task_document" {
+		fmt.Println("upload")
+		uploadDocument(r, file, header)
+	}
+}
+
+func activateChallenge(r *http.Request) {
+	id := r.Form["challenge"][0]
+	fmt.Println("Activationg challenge", id)
+	challenges := GetChallenges()
+	challenges.ActiveChallenge = id
+	fmt.Println("New challenges", challenges)
+	writeChallenges(challenges)
+}
+
+func createTask1(r *http.Request) {
+	if len(r.Form["challenge"]) != 1 ||
+		len(r.Form["category"]) != 1 ||
+		len(r.Form["id"]) != 1 ||
+		len(r.Form["name"]) != 1 {
+		return
+	}
+	cc := r.Form["challenge"][0]	
+	category := r.Form["category"][0]	
+	id := r.Form["id"][0]	
+	name := r.Form["name"][0]	
+
+	t := Task {
+		Name: id,
+		DisplayName: name,
+		Category: category,
+		Time: time.Now().UTC(),
+		Documents: make([]Document, 0),
+	}
+	challenges := GetChallenges()
+	idx := -1
+	for index, element := range challenges.Challenges {
+		if element.Id == cc {
+			idx = index
+			break
+		}
+	}
+	if idx == -1 {
+		return
+	}
+	ch := &challenges.Challenges[idx]
+	ch.Tasks = append(ch.Tasks, t)
+	writeChallenges(challenges)
+}
+
+func createChallenge(r *http.Request) {
+	if len(r.Form["id"]) != 1 ||
+		len(r.Form["name"]) != 1 ||
+		len(r.Form["end_time"]) != 1 {
+		return
+	}
+	id := r.Form["id"][0]	
+	name := r.Form["name"][0]	
+//	startTime := r.Form["start_time"][0]	
+	endTime := r.Form["end_time"][0]	
+	fmt.Println("endTime", endTime)
+	timeSplit := strings.Split(endTime, " ")
+	fmt.Println("split", timeSplit)
+	dd := strings.Split(timeSplit[0], "-")
+	fmt.Println("dd", dd)
+	hh := strings.Split(timeSplit[1], ":")
+	fmt.Println("hh", hh)
+	y, _ := strconv.Atoi(dd[0])
+	M, _ := strconv.Atoi(dd[1])
+	d, _ := strconv.Atoi(dd[2])
+	h, _ := strconv.Atoi(hh[0])
+	m, _ := strconv.Atoi(hh[1])
+	location, _ := time.LoadLocation("Europe/Sofia")
+	deadline := time.Date(y, time.Month(M), d, h, m, 0, 0, location)
+	
+	c := Challenge {
+		Id: id,
+		Name: name,
+		CreateTime: time.Now().UTC(),
+		EndTime: deadline, 
+		Tasks: make([]Task, 0),
+		AdditionalDocuments: make([]Document, 0),
+	}
+	fmt.Println("Creating challenge", c)
+	challenges := GetChallenges()
+	challenges.Challenges = append(challenges.Challenges, c)
+	writeChallenges(challenges)
+}
+
+func writeChallenges(challenges *Challenges) {
+	fmt.Println("writing challenges", challenges)
+	file := ws.GetFilePath("challenges.json")
+	json, _ := json.Marshal(challenges)
+	os.Create(file)
+	ioutil.WriteFile(file, json, 0700)
+}
+
+func GetChallenges() *Challenges {
+	var c Challenges
+	file := ws.ReadFile("challenges.json")
+	err := json.Unmarshal(file, &c)
+	if err != nil {
+		c = Challenges{
+			ActiveChallenge: "",
+			Challenges: make([]Challenge, 0),
+		}
+	}
+	fmt.Println("challenges", c)
+	return &c
+}
+
 
 func UploadTask(w http.ResponseWriter, r *http.Request) error {
 	task, err := createTask(w, r)
+	fmt.Println("fsdfsdfasd***", task)
 	if err != nil {
 		return err
 	}
-	writeTasks([]Task{task})
+	writeTasks(task)
 	return nil
 }
 
-func createTask(w http.ResponseWriter, r *http.Request) (Task, error) {
-	r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
-	file, header, _ := r.FormFile("file")
-	task := Task{}
-	task.Name = r.Form["name"][0]
-	task.Type = r.Form["type"][0]
-	task.Time = time.Now().UTC()
+func uploadDocument(r *http.Request, file multipart.File, header *multipart.FileHeader) {
+	fmt.Println("uploadDocument")
+	//r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
+	challenges := GetChallenges()
+	challengeStr := r.Form["challenge"][0]
+	challenge := &Challenge{}
+	for idx, cc := range challenges.Challenges {
+		if cc.Id == challengeStr {
+			challenge = &challenges.Challenges[idx]
+			break
+		}
+	}
+	task := &Task{}
+	for idx, tt := range challenge.Tasks {
+		if tt.Name == r.Form["task"][0] {
+			task = &challenge.Tasks[idx]
+			break
+		}
+	}
+	fmt.Println("task", task)
 	link := r.Form["link"][0]
-	if link != "" {
+	ttt := time.Now().UTC()
+	if len(link) == 0 {
 		defer file.Close()
-		fn := task.Type + "_" + strconv.FormatInt(task.Time.UnixNano(), 16) + filepath.Ext(header.Filename)
-		fp := ws.GetFilePath("tasks", fn)
+		fn := task.Category + "_" + strconv.FormatInt(ttt.UnixNano(), 16) + filepath.Ext(header.Filename)
+		fp := ws.GetFilePath("docs", fn)
 		fmt.Println("Path***", fp)
 		out, err := os.Create(fp)
 		if err != nil {
 			fmt.Println(err)
-			return task, errors.New("Problems writing the file. Contact system admins for help")
+			return
 		}
 		defer out.Close()
 		_, err = io.Copy(out, file)
 		if err != nil {
 			fmt.Println(err)
-			return task, errors.New("Problems writing the file. Contact system admins for help")
+			return
 		}
 		link = "/docs/" + fn
 	}
 	document := Document{
 		Link: link,
-		Text: r.Form["text"][0]}
-	task.Documents = []Document{document}
-	return task, nil
+		DocType: r.Form["type"][0],
+		Time: ttt,
+	}
+	fmt.Println("document", document)
+	task.Documents = append(task.Documents, document)
+	writeChallenges(challenges)
+}
+
+func GetActiveChallenge() Challenge {
+	challenges := GetChallenges()
+	for _, element := range challenges.Challenges {
+		if challenges.ActiveChallenge == element.Id {
+			return element
+		}
+	}
+	return Challenge{}
+}
+
+func createTask(w http.ResponseWriter, r *http.Request) ([]Task, error) {
+	fmt.Println("creating task*****")
+	r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
+	file, header, _ := r.FormFile("file")
+	fmt.Println("header", header)
+	ttt := GetTasks()
+	task := &Task{}
+	for idx, tt := range ttt {
+		if tt.Name == r.Form["name"][0] {
+			task = &ttt[idx]
+			break
+		}
+	}
+	task.DisplayName = "pesho"
+	fmt.Println("pesho", task)
+	fmt.Println("pesho", ttt)
+	if len(task.Name) == 0 {
+		task.Name = r.Form["name"][0]
+		task.Time = time.Now().UTC()
+		ttt = append(ttt, *task)
+	} 
+	if len(r.Form["display_name"][0]) != 0 {
+		task.DisplayName = r.Form["display_name"][0]
+	}
+	if len(r.Form["category"][0]) != 0 {
+		task.Category = r.Form["category"][0]
+	}
+	link := r.Form["link"][0]
+	if len(link) == 0 {
+		defer file.Close()
+		fn := task.Category + "_" + strconv.FormatInt(task.Time.UnixNano(), 16) + filepath.Ext(header.Filename)
+		fp := ws.GetFilePath("tasks", fn)
+		fmt.Println("Path***", fp)
+		out, err := os.Create(fp)
+		if err != nil {
+			fmt.Println(err)
+			return ttt, errors.New("Problems writing the file. Contact system admins for help")
+		}
+		defer out.Close()
+		_, err = io.Copy(out, file)
+		if err != nil {
+			fmt.Println(err)
+			return ttt, errors.New("Problems writing the file. Contact system admins for help")
+		}
+		link = "/docs/" + fn
+	}
+	document := Document{
+		Link: link,
+		DocType: r.Form["doc_type"][0],
+		Time: time.Now().UTC(),
+	}
+	if task.Documents == nil {
+		task.Documents = make([]Document, 0)
+	}
+	task.Documents = append(task.Documents, document)
+	fmt.Println("task", task)
+	fmt.Println("ttt", ttt)
+	return ttt, nil
 }
 
 func writeTasks(tasks []Task) {
@@ -76,6 +349,17 @@ func writeTasks(tasks []Task) {
 	json, _ := json.Marshal(tasks)
 	os.Create(file)
 	ioutil.WriteFile(file, json, 0700)
+}
+
+func GetTasks() []Task {
+	var t []Task
+	file := ws.ReadFile("tasks.json")
+	err := json.Unmarshal(file, &t)
+	if err != nil {
+		t = make([]Task, 0)
+	}
+	fmt.Println(t)
+	return t
 }
 
 type Homework struct {
@@ -94,13 +378,19 @@ type TeamHomeworks struct {
 type JudgeDashboard struct {
 	Task string
 	Homeworks []TeamHomeworks
+	CurrentChallenge Challenge
 }
 
 func GetJudgeDashboard(username string, task string) JudgeDashboard {
-	if task != "project" && task != "robot" {
-		task = "team"
+	challenge := GetActiveChallenge()
+	fmt.Println("Active Challenge", challenge)
+	if len(challenge.Tasks) == 0 {
+		return JudgeDashboard{Homeworks: make([]TeamHomeworks, 0)}
 	}
-	jd := JudgeDashboard{Task: task, Homeworks: make([]TeamHomeworks, 0)}
+	if task == "" {
+		task = challenge.Tasks[0].Name
+	}
+	jd := JudgeDashboard{Task: task, CurrentChallenge: challenge, Homeworks: make([]TeamHomeworks, 0)}
 	tt := teams.GetTeams()
 	tms := GetTeamMarks(username)
 	
@@ -194,6 +484,11 @@ type TeamResults struct {
 
 type Results []TeamResults
 
+type DisplayResults struct {
+	CurrentChallenge Challenge
+	AllResults Results
+}
+
 func (r Results) Len() int {
 	return len(r)
 }
@@ -203,12 +498,22 @@ func (r Results) Swap(i, j int) {
 }
 
 func (r Results) Less(i, j int) bool {
-	return r[i].Stars[0]+r[i].Stars[1]+r[i].Stars[2] > r[j].Stars[0]+r[j].Stars[1]+r[j].Stars[2]
+	countI := 0
+	for _, element := range r[i].Stars {
+		countI += element
+	}
+	countJ := 0
+	for _, element := range r[j].Stars {
+		countJ += element
+	}
+	return countI > countJ	
 }
 
-func GetResults() Results {
+func GetResults() DisplayResults {
 	tmrs := make(Results, 0)
 	//tmrs = append(tmrs, TeamResults{Id: "Id", Name: "Otbor", Results: []string{"A", "B", "C"}})
+
+	challenge := GetActiveChallenge()
 
 	tt := teams.GetTeams()
 	tms := GetTeamMarks("pesho")
@@ -217,32 +522,25 @@ func GetResults() Results {
 		tm := tms[t.Id]
 		tr := TeamResults{Id: t.Id, Name: t.Name, Stars: make([]int, 0), NoStars: make([]int, 0)}
 
-		v, _ := strconv.Atoi(tm.Marks["team"].Points)
-		if v >= 3 {
-			v = 3
+		for _, ttttt := range challenge.Tasks {
+			v, _ := strconv.Atoi(tm.Marks[ttttt.Name].Points)
+			if v >= 3 {
+				v = 3
+			}
+			tr.Stars = append(tr.Stars, v)
+			tr.NoStars = append(tr.NoStars, 3-v)
 		}
-		tr.Stars = append(tr.Stars, v)
-		tr.NoStars = append(tr.NoStars, 3-v)
-
-		v, _ = strconv.Atoi(tm.Marks["project"].Points)
-		if v >= 3 {
-			v = 3
-		}
-		tr.Stars = append(tr.Stars, v)
-		tr.NoStars = append(tr.NoStars, 3-v)
-
-		v, _ = strconv.Atoi(tm.Marks["robot"].Points)
-		if v >= 3 {
-			v = 3
-		}
-		tr.Stars = append(tr.Stars, v)
-		tr.NoStars = append(tr.NoStars, 3-v)
 
 		tmrs = append(tmrs, tr)
 	}
 	fmt.Println("results", tmrs)
 	sort.Sort(tmrs)
-	return tmrs
+	return DisplayResults{
+		CurrentChallenge: challenge,
+		AllResults: tmrs,
+	}
 }
+
+
 
 

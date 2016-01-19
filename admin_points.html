@@ -54,6 +54,7 @@
 							<nav class="horizontal-nav full-width horizontalNav-notprocessed">
 								<ul class="sf-menu">
 									<li><a href="admin.html">Админ</a></li>
+									<li ><a href="admin_challenges.html" >Задания</a></li>
 									<li class="current"><a href="points.html">Точки</a></li>
 									<li><a href="results.html">Резултати</a></li>
 								</ul>
@@ -67,16 +68,16 @@
 <!--==============================Content=================================-->
 			<div class="content"><div class="ic">More Website Templates @ TemplateMonster.com - April 21, 2014!</div>
 				<div class="container_12" style="padding-top: 30px">
-					<div class="grid_4">
-						<h3>Задачи</h3>
+					<div class="grid_3">
+            <h3>{{.CurrentChallenge.Name}}</h3>
 						<ul class="list1 color1">
 							<li><a href="#"></a></li>
-              <li><a href="points.html?page=team" >Екипна задача</a></li>
-              <li><a href="points.html?page=project" >Проектна задача</a></li>
-              <li><a href="points.html?page=robot" >Робо мисия</a></li>
+							{{range $index, $element := .CurrentChallenge.Tasks}}
+              <li><a href="points.html?page={{$element.Name}}" >{{$element.DisplayName}}</a></li>
+              {{end}}
 						</ul>
 					</div>
-					<div class="grid_8">
+					<div class="grid_9">
             <h3>{{.Task}}</h3>
             <input type="hidden" id="task" value="{{.Task}}" />
 						<table class="task-table">

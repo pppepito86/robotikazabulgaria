@@ -3,30 +3,27 @@ package dashboard
 import (
 	"robotikazabulgaria/hw"
 	"robotikazabulgaria/teams"
+	"robotikazabulgaria/admin"
 )
 
 type Dashboard struct {
 	Name    string
-	Team    []hw.Homework
-	Project []hw.Homework
-	Robot   []hw.Homework
+	Challenge   admin.Challenge
+	Homeworks map[string][]hw.Homework
 }
 
 func GetDashboard(user string) Dashboard {
 	homeworks := hw.ReadHomeworks(user)
 	dashboard := Dashboard{
 		Name:    teams.GetTeamName(user),
-		Team:    make([]hw.Homework, 0),
-		Project: make([]hw.Homework, 0),
-		Robot:   make([]hw.Homework, 0)}
+		Challenge: admin.GetActiveChallenge(),
+		Homeworks: make(map[string][]hw.Homework),
+	}
 	for _, homework := range homeworks {
-		if homework.Task == "team" {
-			dashboard.Team = append(dashboard.Team, homework)
-		} else if homework.Task == "project" {
-			dashboard.Project = append(dashboard.Project, homework)
-		} else if homework.Task == "robot" {
-			dashboard.Robot = append(dashboard.Robot, homework)
+		if dashboard.Homeworks[homework.Task] == nil {
+			dashboard.Homeworks[homework.Task] = make([]hw.Homework, 0)
 		}
+		dashboard.Homeworks[homework.Task] = append(dashboard.Homeworks[homework.Task], homework)
 	}
 	return dashboard
 }

@@ -30,7 +30,7 @@ func main() {
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("js"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
-	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("docs"))))
+	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("work_dir/docs"))))
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
@@ -76,8 +76,7 @@ func handleGuest(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.URL.Path == "/index.html" {
 		t, _ := template.ParseFiles("index.html")
-		location, _ := time.LoadLocation("Europe/Sofia")
-		deadline := time.Date(2016, 1, 24, 18, 0, 0, 0, location)
+		deadline := admin.GetActiveChallenge().EndTime
 		t.Execute(w, deadline.UnixNano()/1000000)
 	} else {
 		http.Redirect(w, r, "/index.html", http.StatusFound)
@@ -99,6 +98,20 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, admin.GetResults())
 		return
 	}
+
+	fmt.Println("**************", r.URL.Path)
+	if r.URL.Path == "/admin_challenges.html" {
+		fmt.Println("challenges request")
+		fmt.Println("method", r.Method)
+		if r.Method == "POST" {
+			fmt.Println("post")
+			admin.UpdateChallenge(r)
+		}
+		t, _ := template.ParseFiles("admin_challenges.html")
+		t.Execute(w, admin.GetPageChallenges(r.URL.Query().Get("challenge")))
+		return
+	}
+
 	if r.URL.Path != "/admin.html" && r.URL.Path != "/points.html"{
 		http.Redirect(w, r, "/admin.html", http.StatusFound)
 		return
@@ -106,7 +119,6 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/points.html" {
 		if r.Method == "POST" {
 			admin.UpdatePoints(r, getUser(*r))
-			return
 		}
 		t, _ := template.ParseFiles("admin_points.html")
 		t.Execute(w, admin.GetJudgeDashboard(getUser(*r), r.URL.Query().Get("page")))
@@ -120,7 +132,8 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 			admin.UploadTask(w, r)
 		}
 		t, _ := template.ParseFiles("admin_tasks.html")
-		t.Execute(w, teams.GetTeams())
+		t.Execute(w, admin.GetTasks())
+		return
 		} else {
 		if r.Method == "POST" {
 			r.ParseForm()
@@ -177,8 +190,8 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 		// sss := []string{"aaa", "bbb", "ccc"}
 		// pwd, _ := os.Getwd()
 		// files, _ := filepath.Glob(pwd+"\\"+getUser(*r)+"\\*")
-		location, _ := time.LoadLocation("Europe/Sofia")
-		tt := time.Date(2016, 1, 24, 18, 0, 0, 0, location)
+
+		tt := admin.GetActiveChallenge().EndTime
 		t.Execute(w, tt.UnixNano()/1000000)
 	} else if r.URL.Path == "/tasks.html" {
 		r.ParseForm()
@@ -331,3 +344,4 @@ func logout(w http.ResponseWriter, r http.Request) {
 	cookie := http.Cookie{Name: "session.id", Value: val, MaxAge: -1}
 	http.SetCookie(w, &cookie)
 }
+

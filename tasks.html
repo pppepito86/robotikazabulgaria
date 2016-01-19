@@ -72,21 +72,20 @@
 						<h3>Материали</h3>
 						<ul class="list1 color1">
 							<li><a href="#"></a></li>
-              <li>Екипна задача - <a href="docs/team.pdf" >pdf</a>, <a href="docs/team.docx" >docs</a></li>
-              <li>Проектна задача - <a href="docs/project.pdf" >pdf</a>, <a href="docs/project.docx" >docx</a></li>
-              <li>Робо мисия - <a href="docs/robot.pdf" >pdf</a>, <a href="https://www.youtube.com/watch?v=qDD5SOT4Y6I" >video</a></li>
-							<br />
-              <li>Поле - <a href="docs/field.pdf" >pdf</a>, <a href="https://www.youtube.com/watch?v=RNeJ3nINJ0A" >video</a></li>
-              <li>Правила - <a href="docs/rules.pdf" >pdf</a></li>
+						  {{range $index, $element := .Challenge.Tasks}}
+              <li>{{$element.DisplayName}} - 
+						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" >{{$element2.DocType}}</a>{{end}}
+              </li>
+              {{end}}
 						</ul>
 						<div class="block3">
 							<p><h3>Предаване</h3> </p>
 							<form action="tasks.html" method="post" enctype="multipart/form-data" >
 								<table class="submit-table">
 								<tr><td><label for="task">Тип:</label></td><td><select id="task" style="width:235px"	 name="task">
-								  <option value="team">Екипна задача</option>
-								  <option value="project">Проектна задача</option>
-								  <option value="robot">Робо мисия</option>
+						    {{range $index, $element := .Challenge.Tasks}}
+                <option value="{{$element.Name}}">{{$element.DisplayName}}</option>
+                {{end}}
 								</select></td> </tr>
 								
 								<tr><td><label for="file">Файл:</label></td><td><input type="file" name="file" id="file" /></td> </tr>
@@ -114,20 +113,24 @@
 						</div>
 					</div>
 					<div class="grid_8">
-						<h3>Екипна задача</h3>
+						{{range $index, $element := .Challenge.Tasks}}
+            <br />
+            <br />
+            <h3>{{$element.DisplayName}}</h3>
 						<table class="task-table">
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							{{if .Team}}
-								{{range $index, $element := .Team}}
+              {{$p:=index $.Homeworks $element.Name}}
+							{{if $p}}
+								{{range $index2, $element2 := $p}}
 								<tr>
-							 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
-									<td><a href="{{$element.Link}}">Отвори</a> </td>
-									<td>{{$element.Description}}</td>
+							 		<td>{{$element2.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
+									<td><a href="{{$element2.Link}}" >Отвори</a> </td>
+									<td>{{$element2.Description}}</td>
 									<td><form method="post" action="/tasks.html" >
 									<input type="hidden" name="operation" value="delete" />
-									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
+									<input type="hidden" name="id" value="{{$element2.Time.UnixNano}}" />
 									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
 									</form></td>
 								</tr>
@@ -138,103 +141,10 @@
 								<td>Не е качено нищо</td>
 								</tr>
 								<tr><td></td> </tr>
-							{{end}}
+              {{end}}
 							</tbody>
 						</table>
-						
-						<h3>Проектна задача</h3>
-						<table class="task-table">
-							<colgroup><col>
-							</colgroup>
-							<tbody>
-							{{if .Project}}
-								{{range $index, $element := .Project}}
-									<tr>
-								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
-										<td><a href="{{$element.Link}}">Отвори</a> </td>
-										<td>{{$element.Description}}</td>
-										<td><form method="post" action="/tasks.html">
-									<input type="hidden" name="operation" value="delete" />
-									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
-									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
-									</form></td>
-									</tr>
-								{{end}}
-								<tr><td></td><td></td><td></td><td></td></tr>
-							{{else}}
-								<tr>
-								<td>Не е качено нищо</td>
-								</tr>
-								<tr><td></td> </tr>
-							{{end}}
-							</tbody>
-						</table>
-						
-						
-						<h3>Робо мисия</h3>
-						<table class="task-table">
-							<colgroup><col>
-							</colgroup>
-							<tbody>
-							{{if .Robot}}
-								{{range $index, $element := .Robot}}
-									<tr>
-								 		<td>{{$element.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
-										<td><a href="{{$element.Link}}">Отвори</a> </td>
-										<td>{{$element.Description}}</td>
-									<td><form method="post" action="/tasks.html">
-									<input type="hidden" name="operation" value="delete" />
-									<input type="hidden" name="id" value="{{$element.Time.UnixNano}}" />
-									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
-									</form></td>
-									</tr>
-								{{end}}
-								<tr><td></td><td></td><td></td><td></td></tr>
-							{{else}}
-								<tr>
-								<td>Не е качено нищо</td>
-								</tr>
-								<tr><td></td> </tr>
-							{{end}}
-							</tbody>
-						</table>
-						<!--table class="task-table">
-							<colgroup><col>
-							</colgroup>
-							<tbody>
-							<tr>
-							<td>Не е качено нищо</td>
-							</tr>
-							<tr><td></td> </tr>
-							</tbody>
-						</table-->
-						
-						<!--
-						<img src="images/page4_img1.jpg" alt="" class="img_inner fleft">
-						<div class="extra_wrapper">
-							<p class="color1"><a href="#">Damus at magna non nunc tristique rhoncuseri tym. Aliquam nibh ante, egestas id dictum aterert</a></p>
-							Tcommodo re luctus libero. Praesent faucibusertulomi malesuada cibuste. Donec laoreet metus id laoreetert malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur orci sed ertoli molo Curabitur vel lorem sit amet nulla ullamcorper fermentum. In vitae varius augue, eu consectetur ligula. Etiam dui eros, laoreet sit amet est vel, commodo venenatis eroswe.
-						</div>
-						<div class="clear"></div>
-						<div class="grid_3 alpha">
-							<h3 class="h3__head2">Club Committee</h3>
-							<ul class="list2">
-								<li><span class="color1"><a href="#">Club Captain:</a></span> Mark Johnson</li>
-								<li><span class="color1"><a href="#">Ladies Captain:</a></span> Linda Grosh</li>
-								<li><span class="color1"><a href="#">Secretary:</a></span> Patrick Pool</li>
-								<li><span class="color1"><a href="#">Social Secretary:</a></span> John Priston</li>
-								<li><span class="color1"><a href="#">Treasures:</a></span> Jessica Wood</li>
-								<li><span class="color1"><a href="#">Assistant Captain:</a></span> Sam Kromstain</li>
-								<li><span class="color1"><a href="#">Dunbartonshire Rep:</a></span> John Franklin </li>
-								<li><span class="color1"><a href="#">Webmaster:</a></span> Mike Tomson</li>
-							</ul>
-						</div>
-						<div class="grid_5 omega">
-							<h3 class="h3__head2">Website Information</h3>
-							<p class="color1"><a href="#">Damus at magna non nunc tristique rhoncuseri tym. Aliquam nibh ante, egestas id dictum aterert</a></p>
-							Tcommodo re luctus libero. Praesent faucibusertulomi malesuada cibuste. Donec laoreet metus id laoreetert malesuada. Loremert ipsum dolor sit amet, consectetur adipiscing elit. Nullamer lomiter consectetur orci sed ertoli gerti lominuty wertto dertfrt csaertolimi molourabitur vel lorem sit amet nulla ullamcorper fermentum. In vitae varius augue, eu consectetur ligula. Etiam dui eros, laoreet sit amet est vel, commodo venenatis erosweret olopsce adipiscing quam id risus sagittis, non consequat lacus interdum.
-						</div>
-						-->
+            {{end}}
 					</div>
 					<div class="clear"></div>
 				</div>
