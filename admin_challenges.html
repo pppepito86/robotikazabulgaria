@@ -49,6 +49,17 @@
       map[{{$element.Id}}] = arr;
     {{end}}
 
+
+    var mapAdd = new Object();
+	  {{range $index, $element := .AllChallenges.Challenges}}
+      var arr=new Array();
+	    {{range $index2, $element2 := $element.AdditionalDocuments}}
+        arr.push({{$element2.Name}});
+      {{end}}
+      mapAdd[{{$element.Id}}] = arr;
+    {{end}}
+
+
     function optionChanged() {
       var op = document.getElementById("operation").value;
       if (op === "new_challenge") {
@@ -59,7 +70,8 @@
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
-                  "<option value=\"additional_document\" >New Additional Document</option>"+
+                  "<option value=\"challenge_additional\" >New Additional</option>"+
+                  "<option value=\"additional_document\" >Additional Document</option>"+
 								"</select></td> </tr>"+
 								"<tr><td><label for=\"id\" >Id:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"id\" id=\"id\" /></td> </tr>"+
 								"<tr><td><label for=\"name\" >Name:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"name\" id=\"name\" /></td> </tr>"+
@@ -78,7 +90,8 @@
 								  "<option value=\"activate_challenge\" selected >Activate Challenge</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
-                  "<option value=\"additional_document\" >New Additional Document</option>"+
+                  "<option value=\"challenge_additional\" >New Additional</option>"+
+                  "<option value=\"additional_document\" >Additional Document</option>"+
 								"</select></td> </tr>"+
   	            "<tr><td><label for=\"challenge\" >Challenge:</label></td><td><select id=\"challenge\" style=\"width:235px\" name=\"challenge\" >"+
 						    {{range $index, $element := .AllChallenges.Challenges}}
@@ -98,7 +111,8 @@
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
 								  "<option value=\"challenge_task\" selected >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
-                  "<option value=\"additional_document\" >New Additional Document</option>"+
+                  "<option value=\"challenge_additional\" >New Additional</option>"+
+                  "<option value=\"additional_document\" >Additional Document</option>"+
 								"</select></td> </tr>"+
   	            "<tr><td><label for=\"challenge\" >Challenge:</label></td><td><select id=\"challenge\" style=\"width:235px\" name=\"challenge\" >"+
 						    {{range $index, $element := .AllChallenges.Challenges}}
@@ -127,7 +141,8 @@
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" selected >New Task Document</option>"+
-                  "<option value=\"additional_document\" >New Additional Document</option>"+
+                  "<option value=\"challenge_additional\" >New Additional</option>"+
+                  "<option value=\"additional_document\" >Additional Document</option>"+
 								"</select></td> </tr>"+
   	            "<tr><td><label for=\"challenge\" >Challenge:</label></td><td><select id=\"challenge\" style=\"width:235px\" name=\"challenge\" onchange=\"updateTasks()\" >"+
 						    {{range $index, $element := .AllChallenges.Challenges}}
@@ -151,6 +166,70 @@
             document.getElementById("form").innerHTML = text;
             updateTasks();
       }
+     if (op === "challenge_additional") {  
+        var text = "<form action=\"admin_challenges.html\" method=\"post\" >" +
+								"<table class=\"submit-table\">"+
+								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
+								  "<option value=\"new_challenge\" >New Challenge</option>"+
+								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"challenge_task\" >New Task</option>"+
+								  "<option value=\"task_document\" >New Task Document</option>"+
+                  "<option value=\"challenge_additional\" selected >New Additional</option>"+
+                  "<option value=\"additional_document\" >Additional Document</option>"+
+								"</select></td> </tr>"+
+  	            "<tr><td><label for=\"challenge\" >Challenge:</label></td><td><select id=\"challenge\" style=\"width:235px\" name=\"challenge\" >"+
+						    {{range $index, $element := .AllChallenges.Challenges}}
+                  "<option value=\"{{$element.Id}}\" >{{$element.Name}}</option>"+
+                {{end}}
+								"</select></td> </tr>"+
+		            "<tr><td><label for=\"category\" >Category:</label></td><td><select id=\"category\" style=\"width:235px\" name=\"category\" >"+
+								  "<option value=\"team\" >Team</option>"+
+								  "<option value=\"project\" >Project</option>"+
+								  "<option value=\"robot\" >Robot</option>"+
+								"</select></td> </tr>"+
+  	          
+								"</select></td> </tr>"+
+								"<tr><td><label for=\"id\" >Id:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"id\" id=\"id\" /></td> </tr>"+
+								"<tr><td><label for=\"name\" >Name:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"name\" id=\"name\" /></td> </tr>"+
+								"</table>"+
+						  "<div class=\"alright\"><input type=\"submit\" class=\"btn\" value=\"Add\" /></div>"+
+              "</form>";
+        document.getElementById("form").innerHTML = text;
+      }
+      if (op === "additional_document") {  
+        var text = "<form action=\"admin_challenges.html\" method=\"post\" enctype=\"multipart/form-data\" >" +
+								"<table class=\"submit-table\">"+
+								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
+								  "<option value=\"new_challenge\" >New Challenge</option>"+
+								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"challenge_task\" >New Task</option>"+
+								  "<option value=\"task_document\" >New Task Document</option>"+
+                  "<option value=\"challenge_additional\" >New Additional</option>"+
+                  "<option value=\"additional_document\" selected >Additional Document</option>"+
+								"</select></td> </tr>"+
+  	            "<tr><td><label for=\"challenge\" >Challenge:</label></td><td><select id=\"challenge\" style=\"width:235px\" name=\"challenge\" onchange=\"updateAdditional()\" >"+
+						    {{range $index, $element := .AllChallenges.Challenges}}
+                  "<option value=\"{{$element.Id}}\" >{{$element.Name}}</option>"+
+                {{end}}
+                  "<tr><td><label for=\"task\" >Task:</label></td><td><div id=\"tasksoption\" ><select id=\"task\" style=\"width:235px\" name=\"task\" >";
+            //var ccc = document.getElementById("challenge").value;
+            
+         //       for (var i in map["zadanie1"]) {
+				//				text = text + "<option value=\""+i+"\" >"+i+"</option>";
+         //   }
+                  text = text + "</select></td></div> </tr>"+
+								"</select></td> </tr>"+
+								"<tr><td><label for=\"type\" >Type:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"type\" id=\"type\" /></td> </tr>"+
+								"<tr><td><label for=\"file\" >File:</label></td><td><input type=\"file\" style=\"width:232px\" name=\"file\" id=\"file\" /></td> </tr>"+
+								"<tr><td><label for=\"link\" >Link:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"link\" id=\"link\" /></td> </tr>"+
+								"</table>"+
+						  "<div class=\"alright\"><input type=\"submit\" class=\"btn\" value=\"Add\" /></div>"+
+              "</form>";
+            
+            document.getElementById("form").innerHTML = text;
+            updateAdditional();
+      }
+    
     }
 
   function updateTasks() {
@@ -163,6 +242,18 @@
     text = text + "</select></td>";
     document.getElementById("tasksoption").innerHTML = text;
   }
+
+  function updateAdditional() {
+    var challenge = document.getElementById("challenge").value;
+    var text = "<select id=\"task\" style=\"width:235px\" name=\"task\" >";
+    var arr = mapAdd[challenge];
+    for (var i in arr) {
+		  text = text + "<option value=\""+arr[i]+"\" >"+arr[i]+"</option>";
+    }
+    text = text + "</select></td>";
+    document.getElementById("tasksoption").innerHTML = text;
+  }
+
   function setDate() {
     var endTime = new Date();
     var str = endTime.getFullYear()+"-"+(endTime.getMonth()+1)+"-"+endTime.getDate()+" "+endTime.getHours()+":"+endTime.getMinutes();
@@ -230,7 +321,8 @@
 								  <option value="activate_challenge" >Activate Challenge</option>
 								  <option value="challenge_task" >New Task</option>
 								  <option value="task_document" >New Task Document</option>
-                  <option value="additional_document" >New Additional Document</option>
+                  <option value="challenge_additional" >New Additional</option>
+                  <option value="additional_document" >Additional Document</option>
 								</select></td> </tr>
 
 								<tr><td><label for="id" >Id:</label></td><td><input type="text" style="width:232px" name="id" id="id" /></td> </tr>
@@ -273,6 +365,34 @@
 						      </table>
                 {{end}}
               {{end}}
+
+        {{if $t.AdditionalDocuments}}
+						    {{range $index, $element := $t.AdditionalDocuments}}
+                  <h3 >Extra: {{$element.DisplayName}} ({{$element.Name}}) -> {{$element.Category}}</h3>
+						      <table class="task-table" >
+							    <colgroup ><col></colgroup>
+							    <tbody >
+                  {{if $element.Documents}}
+                    <tr ><th >Type</th><th >Link</th></tr>
+                    {{range $index2, $element2 := $element.Documents}}
+								      <tr >
+							 		      <td >{{$element2.DocType}}</td>
+                        <td ><a href="{{$element2.Link}}" >{{$element2.Link}}</a></td>
+								      </tr>
+								    {{end}}
+                    <tr ><td ></td><td ></td></tr>
+							    {{else}}
+								    <tr >
+								    <td >Не е качено нищо</td>
+								    </tr>
+								    <tr ><td ></td> </tr>
+							    {{end}}
+							    </tbody>
+						      </table>
+                {{end}}
+              {{end}}
+       
+
             {{end}}
 	  		</div>
 			<div class="clear"></div>

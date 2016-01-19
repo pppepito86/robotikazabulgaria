@@ -40,7 +40,7 @@ type Challenge struct {
 	EndTime time.Time
 	CreateTime time.Time
 	Tasks []Task
-	AdditionalDocuments []Document
+	AdditionalDocuments []Task
 }
 
 type Challenges struct {
@@ -91,6 +91,8 @@ func UpdateChallenge(r *http.Request) {
 			createTask1(r)
 		} else if operation == "activate_challenge" {
 			activateChallenge(r)
+		} else if operation == "challenge_additional" {
+			createAdditional(r)
 		}
 		return
 	}
@@ -105,6 +107,8 @@ func UpdateChallenge(r *http.Request) {
 	if operation == "task_document" {
 		fmt.Println("upload")
 		uploadDocument(r, file, header)
+	} else if operation == "additional_document" {
+		additionalDocument(r, file, header)
 	}
 }
 
@@ -116,6 +120,45 @@ func activateChallenge(r *http.Request) {
 	fmt.Println("New challenges", challenges)
 	writeChallenges(challenges)
 }
+
+func createAdditional(r *http.Request) {
+	fmt.Println("Creating Additional")
+	if len(r.Form["challenge"]) != 1 ||
+		len(r.Form["category"]) != 1 ||
+		len(r.Form["id"]) != 1 ||
+		len(r.Form["name"]) != 1 {
+		return
+	}
+	fmt.Println("Creating Additional2")
+	cc := r.Form["challenge"][0]	
+	category := r.Form["category"][0]	
+	id := r.Form["id"][0]	
+	name := r.Form["name"][0]	
+
+	t := Task {
+		Name: id,
+		DisplayName: name,
+		Category: category,
+		Time: time.Now().UTC(),
+		Documents: make([]Document, 0),
+	}
+	challenges := GetChallenges()
+	idx := -1
+	for index, element := range challenges.Challenges {
+		if element.Id == cc {
+			idx = index
+			break
+		}
+	}
+	if idx == -1 {
+		return
+	}
+	ch := &challenges.Challenges[idx]
+	ch.AdditionalDocuments = append(ch.AdditionalDocuments, t)
+	fmt.Println("Creating Additional2", challenges)
+	writeChallenges(challenges)
+}
+
 
 func createTask1(r *http.Request) {
 	if len(r.Form["challenge"]) != 1 ||
@@ -183,7 +226,7 @@ func createChallenge(r *http.Request) {
 		CreateTime: time.Now().UTC(),
 		EndTime: deadline, 
 		Tasks: make([]Task, 0),
-		AdditionalDocuments: make([]Document, 0),
+		AdditionalDocuments: make([]Task, 0),
 	}
 	fmt.Println("Creating challenge", c)
 	challenges := GetChallenges()
@@ -223,6 +266,57 @@ func UploadTask(w http.ResponseWriter, r *http.Request) error {
 	writeTasks(task)
 	return nil
 }
+
+func additionalDocument(r *http.Request, file multipart.File, header *multipart.FileHeader) {
+	fmt.Println("uploadDocument")
+	//r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
+	challenges := GetChallenges()
+	challengeStr := r.Form["challenge"][0]
+	challenge := &Challenge{}
+	for idx, cc := range challenges.Challenges {
+		if cc.Id == challengeStr {
+			challenge = &challenges.Challenges[idx]
+			break
+		}
+	}
+	task := &Task{}
+	for idx, tt := range challenge.AdditionalDocuments {
+		if tt.Name == r.Form["task"][0] {
+			task = &challenge.AdditionalDocuments[idx]
+			break
+		}
+	}
+	fmt.Println("task", task)
+	link := r.Form["link"][0]
+	ttt := time.Now().UTC()
+	if len(link) == 0 {
+		defer file.Close()
+		fn := task.Category + "_" + strconv.FormatInt(ttt.UnixNano(), 16) + filepath.Ext(header.Filename)
+		fp := ws.GetFilePath("docs", fn)
+		fmt.Println("Path***", fp)
+		out, err := os.Create(fp)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer out.Close()
+		_, err = io.Copy(out, file)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		link = "/docs/" + fn
+	}
+	document := Document{
+		Link: link,
+		DocType: r.Form["type"][0],
+		Time: ttt,
+	}
+	fmt.Println("document", document)
+	task.Documents = append(task.Documents, document)
+	writeChallenges(challenges)
+}
+
 
 func uploadDocument(r *http.Request, file multipart.File, header *multipart.FileHeader) {
 	fmt.Println("uploadDocument")

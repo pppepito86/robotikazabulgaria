@@ -77,6 +77,13 @@
 						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" >{{$element2.DocType}}</a>{{end}}
               </li>
               {{end}}
+              <br />
+              {{range $index, $element := .Challenge.AdditionalDocuments}}
+              <li>{{$element.DisplayName}} - 
+						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" >{{$element2.DocType}}</a>{{end}}
+              </li>
+              {{end}}
+              
 						</ul>
 						<div class="block3">
 							<p><h3>Предаване</h3> </p>
