@@ -240,27 +240,19 @@ func download(w http.ResponseWriter, r *http.Request) {
 }
 
 func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
-	fmt.Println("ContentLength", r.Header.Get("Content-Length"))
-	len, _ := strconv.ParseInt(r.Header.Get("Content-Length"), 10, 64)
-	fmt.Println("Len", len)
-	if len > 20*1024*1024 {
-		return hw.Homework{}, errors.New("File should not exceed 20MB")
-	}
 	r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
-	file, header, err := r.FormFile("file")
-	if err != nil {
-		if strings.Contains(err.Error(), "body too large") {
-			return hw.Homework{}, errors.New("File should not exceed 20MB")
-		}
+
+	h := r.Header.Get("Content-Type")
+	if !strings.HasPrefix(h, "multipart") {
 		if strings.TrimSpace(r.Form["link"][0]) != "" {
 			return hw.Homework{"", r.Form["link"][0], r.Form["description"][0], r.Form["task"][0], time.Now().UTC()}, nil
 		} else {
-			return hw.Homework{}, errors.New("You should either select a file or enter link")
+			return hw.Homework{}, errors.New("Трябва да въветете линк")
 		}
-	} else {
-		if strings.TrimSpace(r.Form["link"][0]) != "" {
-			return hw.Homework{}, errors.New("You cannot both select a file and enter link")
-		}
+	}
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		return hw.Homework{}, errors.New("Трябва да изберете файл")
 	}
 	t := time.Now().UTC()
 	defer file.Close()
@@ -269,14 +261,13 @@ func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 	out, err := os.Create(fp)
 	if err != nil {
 		fmt.Println(err)
-		return hw.Homework{}, errors.New("Problems writing the file. Contact system admins for help")
+		return hw.Homework{}, errors.New("Възникна грешка с качването на файла")
 	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
 	if err != nil {
 		fmt.Println(err)
-		return hw.Homework{}, errors.New("Problems writing the file. Contact system admins for help")
-
+		return hw.Homework{}, errors.New("Възникна грешка с качването на файла")
 	}
 	return hw.Homework{header.Filename, "/download?user=" + getUser(*r) + "&file=" + fn, r.Form["description"][0], r.Form["task"][0], t}, nil
 }
