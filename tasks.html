@@ -47,6 +47,12 @@
           document.getElementById("taskform").enctype = "multipart/form-data";
         }
       }
+
+      function confirmDelete(e) {
+        if (confirm("Сигурни ли сте, че искате да продължите с изтриването?")) {
+          e.parentNode.submit();
+        }
+      }
     </script>
 		
 		<div class="main">
@@ -136,7 +142,7 @@
 									<td><form method="post" action="/tasks.html" >
 									<input type="hidden" name="operation" value="delete" />
 									<input type="hidden" name="id" value="{{$element2.Time.UnixNano}}" />
-									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:this.parentNode.submit();"></span>
+									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:confirmDelete(this);"></span>
 									</form></td>
 								</tr>
 								{{end}}
@@ -162,7 +168,5 @@
 			</div>
 		</footer>
 		
-		
-	</body>
 </html>
 
