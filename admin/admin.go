@@ -28,6 +28,7 @@ type Task struct {
 }
 
 type Document struct {
+	Id string
 	Link string
 	DocType string
 	Time time.Time
@@ -125,21 +126,21 @@ func createAdditional(r *http.Request) {
 	fmt.Println("Creating Additional")
 	if len(r.Form["challenge"]) != 1 ||
 		len(r.Form["category"]) != 1 ||
-		len(r.Form["id"]) != 1 ||
 		len(r.Form["name"]) != 1 {
 		return
 	}
 	fmt.Println("Creating Additional2")
 	cc := r.Form["challenge"][0]	
 	category := r.Form["category"][0]	
-	id := r.Form["id"][0]	
+	ttt := time.Now().UTC()
+	id := "extra_" + strconv.FormatInt(ttt.UnixNano(), 16)
 	name := r.Form["name"][0]	
 
 	t := Task {
 		Name: id,
 		DisplayName: name,
 		Category: category,
-		Time: time.Now().UTC(),
+		Time: ttt,
 		Documents: make([]Document, 0),
 	}
 	challenges := GetChallenges()
@@ -163,20 +164,20 @@ func createAdditional(r *http.Request) {
 func createTask1(r *http.Request) {
 	if len(r.Form["challenge"]) != 1 ||
 		len(r.Form["category"]) != 1 ||
-		len(r.Form["id"]) != 1 ||
 		len(r.Form["name"]) != 1 {
 		return
 	}
 	cc := r.Form["challenge"][0]	
 	category := r.Form["category"][0]	
-	id := r.Form["id"][0]	
+	ttt := time.Now().UTC()
+	id := "task_" + strconv.FormatInt(ttt.UnixNano(), 16)
 	name := r.Form["name"][0]	
 
 	t := Task {
 		Name: id,
 		DisplayName: name,
 		Category: category,
-		Time: time.Now().UTC(),
+		Time: ttt,
 		Documents: make([]Document, 0),
 	}
 	challenges := GetChallenges()
@@ -196,12 +197,12 @@ func createTask1(r *http.Request) {
 }
 
 func createChallenge(r *http.Request) {
-	if len(r.Form["id"]) != 1 ||
-		len(r.Form["name"]) != 1 ||
+	if len(r.Form["name"]) != 1 ||
 		len(r.Form["end_time"]) != 1 {
 		return
 	}
-	id := r.Form["id"][0]	
+	ttt := time.Now().UTC()
+	id := "challenge_" + strconv.FormatInt(ttt.UnixNano(), 16)
 	name := r.Form["name"][0]	
 //	startTime := r.Form["start_time"][0]	
 	endTime := r.Form["end_time"][0]	
@@ -223,7 +224,7 @@ func createChallenge(r *http.Request) {
 	c := Challenge {
 		Id: id,
 		Name: name,
-		CreateTime: time.Now().UTC(),
+		CreateTime: ttt,
 		EndTime: deadline, 
 		Tasks: make([]Task, 0),
 		AdditionalDocuments: make([]Task, 0),
@@ -308,6 +309,7 @@ func additionalDocument(r *http.Request, file multipart.File, header *multipart.
 		link = "/docs/" + fn
 	}
 	document := Document{
+		Id: "document_" + strconv.FormatInt(ttt.UnixNano(), 16),
 		Link: link,
 		DocType: r.Form["type"][0],
 		Time: ttt,
@@ -359,6 +361,7 @@ func uploadDocument(r *http.Request, file multipart.File, header *multipart.File
 		link = "/docs/" + fn
 	}
 	document := Document{
+		Id: "document_" + strconv.FormatInt(ttt.UnixNano(), 16),
 		Link: link,
 		DocType: r.Form["type"][0],
 		Time: ttt,

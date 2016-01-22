@@ -102,6 +102,7 @@
               {{end}}
               
 						</ul>
+            {{if .Active}}
 						<div class="block3" >
 							<p ><h3 >Предаване</h3> </p>
 							<form action="tasks.html" method="post" id="taskform" >
@@ -122,6 +123,7 @@
 						    <div class="alright" ><input type="submit" class="btn" value="Качи" /></div>
 							</form>
 						</div>
+            {{end}}
 					</div>
 					<div class="grid_8">
 						{{range $index, $element := .Challenge.Tasks}}

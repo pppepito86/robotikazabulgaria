@@ -45,6 +45,7 @@
       var arr=new Array();
 	    {{range $index2, $element2 := $element.Tasks}}
         arr.push({{$element2.Name}});
+        arr.push({{$element2.DisplayName}});
       {{end}}
       map[{{$element.Id}}] = arr;
     {{end}}
@@ -55,6 +56,7 @@
       var arr=new Array();
 	    {{range $index2, $element2 := $element.AdditionalDocuments}}
         arr.push({{$element2.Name}});
+        arr.push({{$element2.DisplayName}});
       {{end}}
       mapAdd[{{$element.Id}}] = arr;
     {{end}}
@@ -73,7 +75,6 @@
                   "<option value=\"challenge_additional\" >New Additional</option>"+
                   "<option value=\"additional_document\" >Additional Document</option>"+
 								"</select></td> </tr>"+
-								"<tr><td><label for=\"id\" >Id:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"id\" id=\"id\" /></td> </tr>"+
 								"<tr><td><label for=\"name\" >Name:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"name\" id=\"name\" /></td> </tr>"+
 								"<tr><td><label for=\"end_time\" >End time:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"end_time\" id=\"end_time\" /></td> </tr>"+
 								"</table>"+
@@ -126,7 +127,6 @@
 								"</select></td> </tr>"+
   	          
 								"</select></td> </tr>"+
-								"<tr><td><label for=\"id\" >Id:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"id\" id=\"id\" /></td> </tr>"+
 								"<tr><td><label for=\"name\" >Name:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"name\" id=\"name\" /></td> </tr>"+
 								"</table>"+
 						  "<div class=\"alright\"><input type=\"submit\" class=\"btn\" value=\"Add\" /></div>"+
@@ -189,7 +189,6 @@
 								"</select></td> </tr>"+
   	          
 								"</select></td> </tr>"+
-								"<tr><td><label for=\"id\" >Id:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"id\" id=\"id\" /></td> </tr>"+
 								"<tr><td><label for=\"name\" >Name:</label></td><td><input type=\"text\" style=\"width:232px\" name=\"name\" id=\"name\" /></td> </tr>"+
 								"</table>"+
 						  "<div class=\"alright\"><input type=\"submit\" class=\"btn\" value=\"Add\" /></div>"+
@@ -236,8 +235,8 @@
     var challenge = document.getElementById("challenge").value;
     var text = "<select id=\"task\" style=\"width:235px\" name=\"task\" >";
     var arr = map[challenge];
-    for (var i in arr) {
-		  text = text + "<option value=\""+arr[i]+"\" >"+arr[i]+"</option>";
+    for (i=0; i< arr.length; i++) {
+		  text = text + "<option value=\""+arr[i]+"\" >"+arr[++i]+"</option>";
     }
     text = text + "</select></td>";
     document.getElementById("tasksoption").innerHTML = text;
@@ -247,8 +246,8 @@
     var challenge = document.getElementById("challenge").value;
     var text = "<select id=\"task\" style=\"width:235px\" name=\"task\" >";
     var arr = mapAdd[challenge];
-    for (var i in arr) {
-		  text = text + "<option value=\""+arr[i]+"\" >"+arr[i]+"</option>";
+    for (i=0; i< arr.length; i++) {
+		  text = text + "<option value=\""+arr[i]+"\" >"+arr[++i]+"</option>";
     }
     text = text + "</select></td>";
     document.getElementById("tasksoption").innerHTML = text;
@@ -325,7 +324,6 @@
                   <option value="additional_document" >Additional Document</option>
 								</select></td> </tr>
 
-								<tr><td><label for="id" >Id:</label></td><td><input type="text" style="width:232px" name="id" id="id" /></td> </tr>
 								<tr><td><label for="name" >Name:</label></td><td><input type="text" style="width:232px" name="name" id="name" /></td> </tr>
 								<tr><td><label for="end_time" >End time:</label></td><td><input type="text" style="width:232px" name="end_time" id="end_time" /></td> </tr>
 								</table>

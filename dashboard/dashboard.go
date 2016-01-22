@@ -4,9 +4,11 @@ import (
 	"robotikazabulgaria/hw"
 	"robotikazabulgaria/teams"
 	"robotikazabulgaria/admin"
+	"time"
 )
 
 type Dashboard struct {
+	Active bool
 	Name    string
 	Challenge   admin.Challenge
 	Homeworks map[string][]hw.Homework
@@ -14,9 +16,12 @@ type Dashboard struct {
 
 func GetDashboard(user string) Dashboard {
 	homeworks := hw.ReadHomeworks(user)
+	ch := admin.GetActiveChallenge()
+	act := time.Now().UTC().Before(ch.EndTime.UTC())
 	dashboard := Dashboard{
+		Active: act,
 		Name:    teams.GetTeamName(user),
-		Challenge: admin.GetActiveChallenge(),
+		Challenge: ch,
 		Homeworks: make(map[string][]hw.Homework),
 	}
 	for _, homework := range homeworks {
