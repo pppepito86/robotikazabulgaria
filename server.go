@@ -239,7 +239,21 @@ func download(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, ws.GetFilePath(user, file))
 }
 
+func isUploadAllowed() bool {
+	c := admin.GetActiveChallenge()
+	if c.Id == "" {
+		return false
+	}
+	endTime := c.EndTime
+	t := time.Now().UTC()
+	return endTime.After(t)
+}
+
 func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
+	if !isUploadAllowed() {
+		return hw.Homework{}, errors.New("Не можете да качвате след крайния срок")
+	}
+
 	r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
 
 	h := r.Header.Get("Content-Type")
