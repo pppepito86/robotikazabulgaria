@@ -91,13 +91,13 @@
 							<li><a href="#"></a></li>
 						  {{range $index, $element := .Challenge.Tasks}}
               <li>{{$element.DisplayName}} - 
-						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" >{{$element2.DocType}}</a>{{end}}
+						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" target="_blank" >{{$element2.DocType}}</a>{{end}}
               </li>
               {{end}}
               <br />
               {{range $index, $element := .Challenge.AdditionalDocuments}}
               <li>{{$element.DisplayName}} - 
-						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" >{{$element2.DocType}}</a>{{end}}
+						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" target="_blank" >{{$element2.DocType}}</a>{{end}}
               </li>
               {{end}}
               
@@ -139,7 +139,7 @@
 								{{range $index2, $element2 := $p}}
 								<tr>
 							 		<td>{{$element2.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
-									<td><a href="{{$element2.Link}}" >Отвори</a> </td>
+									<td><a href="{{$element2.Link}}" target="_blank" >Отвори</a> </td>
 									<td>{{$element2.Description}}</td>
 									<td><form method="post" action="/tasks.html" >
 									<input type="hidden" name="operation" value="delete" />
