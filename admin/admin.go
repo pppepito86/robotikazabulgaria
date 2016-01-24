@@ -37,7 +37,7 @@ type Document struct {
 type Challenge struct {
 	Id string
 	Name string
-	StartTime time.Time
+	State string
 	EndTime time.Time
 	CreateTime time.Time
 	Tasks []Task
@@ -92,6 +92,8 @@ func UpdateChallenge(r *http.Request) {
 			createTask1(r)
 		} else if operation == "activate_challenge" {
 			activateChallenge(r)
+		} else if operation == "publish_results" {
+			publishResults(r)
 		} else if operation == "challenge_additional" {
 			createAdditional(r)
 		}
@@ -120,6 +122,7 @@ func activateChallenge(r *http.Request) {
 	challenges.ActiveChallenge = id
 	fmt.Println("New challenges", challenges)
 	writeChallenges(challenges)
+	updateStatus(id, "")
 }
 
 func createAdditional(r *http.Request) {
@@ -160,6 +163,30 @@ func createAdditional(r *http.Request) {
 	writeChallenges(challenges)
 }
 
+func publishResults(r *http.Request) {
+	if len(r.Form["challenge"]) != 1 {
+		return
+	}
+	cc := r.Form["challenge"][0]	
+	updateStatus(cc, "finished") 
+}
+
+func updateStatus(cc string, status string) {
+	challenges := GetChallenges()
+	idx := -1
+	for index, element := range challenges.Challenges {
+		if element.Id == cc {
+			idx = index
+			break
+		}
+	}
+	if idx == -1 {
+		return
+	}
+	ch := &challenges.Challenges[idx]
+	ch.State = status
+	writeChallenges(challenges)
+}
 
 func createTask1(r *http.Request) {
 	if len(r.Form["challenge"]) != 1 ||
@@ -612,11 +639,25 @@ func (r Results) Less(i, j int) bool {
 	return countI > countJ	
 }
 
-func GetResults() DisplayResults {
+func GetCurrentResults() DisplayResults {
+	challenge := GetActiveChallenge()
+	return GetResults(challenge)
+}
+
+func GetFinishedResults() DisplayResults {
+	challenges := GetChallenges()
+	for _, c := range challenges.Challenges {
+		fmt.Println("challenge", c)
+		if c.State == "finished" {
+			return GetResults(c)
+		}
+	}
+	return DisplayResults{}
+}
+
+func GetResults(challenge Challenge) DisplayResults {
 	tmrs := make(Results, 0)
 	//tmrs = append(tmrs, TeamResults{Id: "Id", Name: "Otbor", Results: []string{"A", "B", "C"}})
-
-	challenge := GetActiveChallenge()
 
 	tt := teams.GetTeams()
 	tms := GetTeamMarks("pesho")

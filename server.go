@@ -94,8 +94,8 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.URL.Path == "/results.html" {
-		t, _ := template.ParseFiles("results.html")
-		t.Execute(w, admin.GetResults())
+		t, _ := template.ParseFiles("admin_results.html")
+		t.Execute(w, admin.GetCurrentResults())
 		return
 	}
 
@@ -151,6 +151,11 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/index.html" {
 		logout(w, *r)
 		http.Redirect(w, r, "/index.html", http.StatusFound)
+		return
+	}
+	if r.URL.Path == "/results.html" {
+		t, _ := template.ParseFiles("results.html")
+		t.Execute(w, admin.GetFinishedResults())
 		return
 	}
 	if r.URL.Path == "/login.html" ||

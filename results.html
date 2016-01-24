@@ -53,10 +53,10 @@
 						<div class="menu_block">
 							<nav class="horizontal-nav full-width horizontalNav-notprocessed">
 								<ul class="sf-menu">
-									<li><a href="admin.html">Админ</a></li>
-									<li ><a href="admin_challenges.html" >Задания</a></li>
-									<li><a href="points.html">Точки</a></li>
-									<li class="current"><a href="results.html">Резултати</a></li>
+                  <li><a href="home.html">Начало</a></li>
+									<!-- <li><a href="profile.html">Профил</a></li> -->
+									<li ><a href="tasks.html">Задания</a></li>
+									<li class="current" ><a href="results.html">Резултати</a></li>
 								</ul>
 							</nav>
 							<div class="clear"></div>
@@ -83,7 +83,7 @@
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							{{if .}}
+							{{if .CurrentChallenge.Tasks}}
               <tr><th>ИД</th><th>Отбор</th>
 								{{range $index, $element := .CurrentChallenge.Tasks}}
                   <th>{{$element.DisplayName}}</th>

@@ -70,6 +70,7 @@
 								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
 								  "<option value=\"new_challenge\" selected >New Challenge</option>"+
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"publish_results\" >Publish Results</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
                   "<option value=\"challenge_additional\" >New Additional</option>"+
@@ -89,6 +90,7 @@
 								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
 								  "<option value=\"new_challenge\" >New Challenge</option>"+
 								  "<option value=\"activate_challenge\" selected >Activate Challenge</option>"+
+								  "<option value=\"publish_results\" >Publish Results</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
                   "<option value=\"challenge_additional\" >New Additional</option>"+
@@ -104,12 +106,35 @@
               "</form>";
         document.getElementById("form").innerHTML = text;
       }
+      if (op === "publish_results") {  
+        var text = "<form action=\"admin_challenges.html\" method=\"post\" >" +
+								"<table class=\"submit-table\">"+
+								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
+								  "<option value=\"new_challenge\" >New Challenge</option>"+
+								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"publish_results\" selected >Publish Results</option>"+
+								  "<option value=\"challenge_task\" >New Task</option>"+
+								  "<option value=\"task_document\" >New Task Document</option>"+
+                  "<option value=\"challenge_additional\" >New Additional</option>"+
+                  "<option value=\"additional_document\" >Additional Document</option>"+
+								"</select></td> </tr>"+
+  	            "<tr><td><label for=\"challenge\" >Challenge:</label></td><td><select id=\"challenge\" style=\"width:235px\" name=\"challenge\" >"+
+						    {{range $index, $element := .AllChallenges.Challenges}}
+                  "<option value=\"{{$element.Id}}\" >{{$element.Name}}</option>"+
+                {{end}}
+								"</select></td> </tr>"+
+								"</table>"+
+						  "<div class=\"alright\"><input type=\"submit\" class=\"btn\" value=\"Publish\" /></div>"+
+              "</form>";
+        document.getElementById("form").innerHTML = text;
+      }
       if (op === "challenge_task") {  
         var text = "<form action=\"admin_challenges.html\" method=\"post\" >" +
 								"<table class=\"submit-table\">"+
 								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
 								  "<option value=\"new_challenge\" >New Challenge</option>"+
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"publish_results\" >Publish Results</option>"+
 								  "<option value=\"challenge_task\" selected >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
                   "<option value=\"challenge_additional\" >New Additional</option>"+
@@ -139,6 +164,7 @@
 								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
 								  "<option value=\"new_challenge\" >New Challenge</option>"+
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"publish_results\" >Publish Results</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" selected >New Task Document</option>"+
                   "<option value=\"challenge_additional\" >New Additional</option>"+
@@ -172,6 +198,7 @@
 								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
 								  "<option value=\"new_challenge\" >New Challenge</option>"+
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"publish_results\" >Publish Results</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
                   "<option value=\"challenge_additional\" selected >New Additional</option>"+
@@ -201,6 +228,7 @@
 								"<tr><td><label for=\"challenge\" ></label></td><td><select id=\"operation\" style=\"width:235px\" name=\"operation\" onchange=\"optionChanged()\" >"+
 								  "<option value=\"new_challenge\" >New Challenge</option>"+
 								  "<option value=\"activate_challenge\" >Activate Challenge</option>"+
+								  "<option value=\"publish_results\" >Publish Results</option>"+
 								  "<option value=\"challenge_task\" >New Task</option>"+
 								  "<option value=\"task_document\" >New Task Document</option>"+
                   "<option value=\"challenge_additional\" >New Additional</option>"+
@@ -318,6 +346,7 @@
 								<tr><td><label for="challenge" ></label></td><td><select id="operation" style="width:235px" name="operation" onchange="optionChanged()" >
 								  <option value="new_challenge" >New Challenge</option>
 								  <option value="activate_challenge" >Activate Challenge</option>
+								  <option value="publish_results" >Publish Results</option>
 								  <option value="challenge_task" >New Task</option>
 								  <option value="task_document" >New Task Document</option>
                   <option value="challenge_additional" >New Additional</option>

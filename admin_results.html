@@ -55,8 +55,8 @@
 								<ul class="sf-menu">
 									<li><a href="admin.html">Админ</a></li>
 									<li ><a href="admin_challenges.html" >Задания</a></li>
-									<li class="current"><a href="points.html">Точки</a></li>
-									<li><a href="results.html">Резултати</a></li>
+									<li><a href="points.html">Точки</a></li>
+									<li class="current"><a href="results.html">Резултати</a></li>
 								</ul>
 							</nav>
 							<div class="clear"></div>
@@ -67,48 +67,87 @@
 			</header>
 <!--==============================Content=================================-->
 			<div class="content"><div class="ic">More Website Templates @ TemplateMonster.com - April 21, 2014!</div>
-				<div class="container_12" style="padding-top: 30px">
-					<div class="grid_3">
-            <h3>{{.CurrentChallenge.Name}}</h3>
+				<div class="container_12" >
+					<!--div class="grid_4">
+						<h3>Задачи</h3>
 						<ul class="list1 color1">
 							<li><a href="#"></a></li>
-							{{range $index, $element := .CurrentChallenge.Tasks}}
-              <li><a href="points.html?page={{$element.Name}}" >{{$element.DisplayName}}</a></li>
-              {{end}}
+              <li><a href="points.html?page=team" >Екипна задача</a></li>
+              <li><a href="points.html?page=project" >Проектна задача</a></li>
+              <li><a href="points.html?page=robot" >Робо мисия</a></li>
 						</ul>
-					</div>
-					<div class="grid_9">
-            <h3>{{.Task}}</h3>
-            <input type="hidden" id="task" value="{{.Task}}" />
+					</div-->
+					<div class="grid_12">
+            <!--h3 class="center">Results</h3-->
 						<table class="task-table">
 							<colgroup><col>
 							</colgroup>
 							<tbody>
-							{{if .Homeworks}}
-              <tr><th>ИД</th><th>Отбор</th><th></th><th></th><th>Точки</th><th>Коментар</th></tr>
-								{{range $index, $element := .Homeworks}}
+							{{if .}}
+              <tr><th>ИД</th><th>Отбор</th>
+								{{range $index, $element := .CurrentChallenge.Tasks}}
+                  <th>{{$element.DisplayName}}</th>
+                {{end}}
+              </tr>
+								{{range $index, $element := .AllResults}}
 								<tr>
 							 		<td>{{$element.Id}}</td>
 							 		<td>{{$element.Name}}</td>
+								  {{range $index, $p := $element.Stars}}
                   <td>
-							    	{{range $index2, $element2 := $element.Homeworks}}
-                      {{if $element2.Extension}}
-                      <a href="{{$element2.Link}}" target="_blank" >{{$element2.Extension}}</a><br /> 
-                      {{else}}
-                        <a href="{{$element2.Link}}" target="_blank" >Отвори</a><br /> 
-                      {{end}}
+                     {{if eq $p 0}}
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 1}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 2}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 3}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 4}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 5}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
                     {{end}}
                   </td>
-                  <td>
-							    	{{range $index2, $element2 := $element.Homeworks}}
-                    {{$element2.Description}}<br /> 
-                    {{end}}
-                  </td>
-                  <td><input type="text" size="5" id="text_{{$element.Id}}" value="{{$element.Mark}}" onblur="changePoints(this);" /></td>
-                  <td><textarea cols="60" rows="10" id="area_{{$element.Id}}" onblur="changePoints(this);" >{{$element.Comment}}</textarea></td>
+                  {{end}}
 								</tr>
 								{{end}}
-                <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+                <tr>
+                <td></td><td></td>
+								{{range $index, $element := .CurrentChallenge.Tasks}}
+                <td></td>
+                {{end}}
+                </tr>
+
 							{{else}}
 								<tr>
 								<td>Не е качено нищо</td>
