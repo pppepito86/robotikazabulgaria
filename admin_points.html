@@ -92,7 +92,11 @@
 							 		<td>{{$element.Name}}</td>
                   <td>
 							    	{{range $index2, $element2 := $element.Homeworks}}
-                    <a href="{{$element2.Link}}" target="_blank" >Отвори</a><br /> 
+                      {{if $element2.Extension}}
+                      <a href="{{$element2.Link}}" target="_blank" >{{$element2.Extension}}</a><br /> 
+                      {{else}}
+                        <a href="{{$element2.Link}}" target="_blank" >Отвори</a><br /> 
+                      {{end}}
                     {{end}}
                   </td>
                   <td>

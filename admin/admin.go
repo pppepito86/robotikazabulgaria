@@ -462,6 +462,7 @@ func GetTasks() []Task {
 type Homework struct {
 	Link string
 	Description string
+	Extension string
 }
 
 type TeamHomeworks struct {
@@ -499,6 +500,11 @@ func GetJudgeDashboard(username string, task string) JudgeDashboard {
 		for _, hw := range hws {
 			if hw.Task == task {
 				h := Homework{Link:hw.Link, Description:hw.Description}
+				if hw.Filename != "" && strings.Contains(hw.Filename, ".") {
+					lastIndex := strings.LastIndex(hw.Filename, ".")
+					ext := hw.Filename[lastIndex:]
+					h.Extension = ext
+				}
 				th.Homeworks = append(th.Homeworks, h)
 			}
 		}
