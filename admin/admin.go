@@ -627,11 +627,11 @@ func GetResults() DisplayResults {
 
 		for _, ttttt := range challenge.Tasks {
 			v, _ := strconv.Atoi(tm.Marks[ttttt.Name].Points)
-			if v >= 3 {
-				v = 3
+			if v >= 5 {
+				v = 5
 			}
 			tr.Stars = append(tr.Stars, v)
-			tr.NoStars = append(tr.NoStars, 3-v)
+			tr.NoStars = append(tr.NoStars, 5-v)
 		}
 
 		tmrs = append(tmrs, tr)
