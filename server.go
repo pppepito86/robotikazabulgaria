@@ -236,6 +236,8 @@ func download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Disposition", "attachment; filename=" + file)
+	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 	http.ServeFile(w, r, ws.GetFilePath(user, file))
 }
 
