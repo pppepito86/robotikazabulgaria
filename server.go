@@ -158,6 +158,11 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, admin.GetFinishedResults())
 		return
 	}
+	if r.URL.Path == "/history.html" {
+		t, _ := template.ParseFiles("history.html")
+		t.Execute(w, dashboard.GetHistoryDashboard(getUser(*r)))
+		return
+	}
 	if r.URL.Path == "/login.html" ||
 		r.URL.Path == "/register.html" ||
 		r.URL.Path == "/index.html" ||

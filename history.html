@@ -71,9 +71,9 @@
 								<ul class="sf-menu">
 									<li><a href="home.html">Начало</a></li>
 									<!-- <li><a href="profile.html">Профил</a></li> -->
-									<li class="current"><a href="tasks.html">Задания</a></li>
+									<li><a href="tasks.html">Задания</a></li>
 									<li><a href="results.html">Резултати</a></li>
-									<li><a href="history.html">История</a></li>
+									<li class="current"><a href="history.html">История</a></li>
 								</ul>
 							</nav>
 							<div class="clear"></div>
@@ -88,45 +88,13 @@
 			<div class="content"><div class="ic">More Website Templates @ TemplateMonster.com - April 21, 2014!</div>
 				<div class="container_12" style="padding-top: 30px">
 					<div class="grid_4">
-						<h3>Материали</h3>
+						<h3>Задания</h3>
 						<ul class="list1 color1">
 							<li><a href="#"></a></li>
-						  {{range $index, $element := .Challenge.Tasks}}
-              <li>{{$element.DisplayName}} - 
-						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" target="_blank" >{{$element2.DocType}}</a>{{end}}
-              </li>
-              {{end}}
-              <br />
-              {{range $index, $element := .Challenge.AdditionalDocuments}}
-              <li>{{$element.DisplayName}} - 
-						    {{range $index2, $element2 := $element.Documents}}{{if gt $index2 0}}, {{end}}<a href="{{$element2.Link}}" target="_blank" >{{$element2.DocType}}</a>{{end}}
-              </li>
-              {{end}}
+              <li>Задание 1</li>
               
 						</ul>
-            {{if .Active}}
-						<div class="block3" >
-							<p ><h3 >Предаване</h3> </p>
-							<form action="tasks.html" method="post" id="taskform" >
-								<table class="submit-table" >
-								<tr ><td ><label for="task" >Задача:</label></td><td ><select id="task" style="width:235px" name="task" >
-						    {{range $index, $element := .Challenge.Tasks}}
-                <option value="{{$element.Name}}" >{{$element.DisplayName}}</option>
-                {{end}}
-								</select></td> </tr>
-                <tr ><td ><label for="type" >Тип:</label></td><td ><select id="type" style="width:235px" name="type" onchange="changeType()" >
-                <option value="link" >Линк</option>
-                <option value="file" >Файл</option>
-								</select></td> </tr>
-								<tr id="tochange" ><td ><label for="link" >Линк:</label></td><td ><input type="text" style="width:232px" name="link" id="link" /></td> </tr>
-								<tr ><td ><label for="description" >Описание:</label></td><td ><textarea style="width:230px" rows="4" name="description" id="description" ></textarea></td> </tr>
-								</table>
-								
-						    <div class="alright" ><input type="submit" class="btn" value="Качи" /></div>
-							</form>
-						</div>
-            {{end}}
-					</div>
+          	</div>
 					<div class="grid_8">
 						{{range $index, $element := .Challenge.Tasks}}
             <br />
@@ -158,7 +126,10 @@
 								<tr><td></td> </tr>
               {{end}}
 							</tbody>
-						</table>
+            </table>
+            {{$t:=index $.Marks $element.Name}}
+            Резултат: {{$t.Points}}<br />
+            Коментар: <area cols="80" rows="4">{{$t.Comment}}<area>
             {{end}}
 					</div>
 					<div class="clear"></div>
