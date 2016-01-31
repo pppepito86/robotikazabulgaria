@@ -48,11 +48,6 @@
         }
       }
 
-      function confirmDelete(e) {
-        if (confirm("Сигурни ли сте, че искате да продължите с изтриването?")) {
-          e.parentNode.submit();
-        }
-      }
     </script>
 		
 		<div class="main">
@@ -91,14 +86,16 @@
 						<h3>Задания</h3>
 						<ul class="list1 color1">
 							<li><a href="#"></a></li>
-              <li>Задание 1</li>
+						  {{range $index, $element := .Teams}}
+              <li><a href="history.html?team={{$element.Id}}">{{$element.Name}}</a></li>
+              {{end}}
+            <li></li>
               
 						</ul>
           	</div>
 					<div class="grid_8">
+            <h3>{{.Name}}</h3>
 						{{range $index, $element := .Challenge.Tasks}}
-            <br />
-            <br />
             <h3>{{$element.DisplayName}}</h3>
 						<table class="task-table">
 							<colgroup><col>
@@ -111,14 +108,9 @@
 							 		<td>{{$element2.Time.Local.Format "Jan 02, 2006 15:04"}}</td>
 									<td><a href="{{$element2.Link}}" target="_blank" >Отвори</a> </td>
 									<td>{{$element2.Description}}</td>
-									<td><form method="post" action="/tasks.html" >
-									<input type="hidden" name="operation" value="delete" />
-									<input type="hidden" name="id" value="{{$element2.Time.UnixNano}}" />
-									<span class="fa fa-trash-o" style="font-size:18pt;cursor: pointer" onclick="javascript:confirmDelete(this);"></span>
-									</form></td>
 								</tr>
 								{{end}}
-								<tr><td></td><td></td><td></td><td></td></tr>
+								<tr><td></td><td></td><td></td></tr>
 							{{else}}
 								<tr>
 								<td>Не е качено нищо</td>
@@ -127,9 +119,6 @@
               {{end}}
 							</tbody>
             </table>
-            {{$t:=index $.Marks $element.Name}}
-            Резултат: {{$t.Points}}<br />
-            Коментар: <area cols="80" rows="4">{{$t.Comment}}<area>
             {{end}}
 					</div>
 					<div class="clear"></div>

@@ -655,6 +655,19 @@ func GetFinishedResults() DisplayResults {
 	return DisplayResults{}
 }
 
+func GetLastFinishedChallenge() time.Time {
+	challenges := GetChallenges()
+	for _, c := range challenges.Challenges {
+		fmt.Println("challenge", c)
+		if c.State == "finished" {
+			return c.EndTime
+		}
+	}
+	return time.Now() 
+}
+
+
+
 func GetResults(challenge Challenge) DisplayResults {
 	tmrs := make(Results, 0)
 	//tmrs = append(tmrs, TeamResults{Id: "Id", Name: "Otbor", Results: []string{"A", "B", "C"}})

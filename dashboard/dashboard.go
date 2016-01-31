@@ -14,6 +14,7 @@ type Dashboard struct {
 	Challenge   admin.Challenge
 	Homeworks map[string][]hw.Homework
 	Marks map[string]admin.Mark
+	Teams []teams.Team
 }
 
 func GetDashboard(user string) Dashboard {
@@ -35,7 +36,10 @@ func GetDashboard(user string) Dashboard {
 	return dashboard
 }
 
-func GetHistoryDashboard(user string) Dashboard {
+func GetHistoryDashboard(user string, team string) Dashboard {
+	if len(team) > 0 {
+		user = team
+	}
 	homeworks := hw.ReadHomeworks(user)
 	tms := admin.GetTeamMarks("pesho")
 	t := tms[user]
@@ -60,6 +64,7 @@ func GetHistoryDashboard(user string) Dashboard {
 		Challenge: ch,
 		Homeworks: make(map[string][]hw.Homework),
 		Marks: t.Marks,
+		Teams: teams.GetTeams(),
 	}
 	for _, homework := range homeworks {
 		if dashboard.Homeworks[homework.Task] == nil {
@@ -67,6 +72,7 @@ func GetHistoryDashboard(user string) Dashboard {
 		}
 		dashboard.Homeworks[homework.Task] = append(dashboard.Homeworks[homework.Task], homework)
 	}
+
 	return dashboard
 }
 

@@ -160,7 +160,7 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.URL.Path == "/history.html" {
 		t, _ := template.ParseFiles("history.html")
-		t.Execute(w, dashboard.GetHistoryDashboard(getUser(*r)))
+		t.Execute(w, dashboard.GetHistoryDashboard(getUser(*r),r.URL.Query().Get("team")))
 		return
 	}
 	if r.URL.Path == "/login.html" ||
@@ -242,8 +242,25 @@ func sendError(w http.ResponseWriter, r *http.Request, msg string, page string) 
 func download(w http.ResponseWriter, r *http.Request) {
 	user := r.URL.Query().Get("user")
 	file := r.URL.Query().Get("file")
+
 	if user != getUser(*r) && !isAdmin(*r) {
-		return
+		t := admin.GetLastFinishedChallenge()
+		hws := hw.ReadHomeworks(user)
+		b := false
+		l := "/download?user="+user+"&file="+file
+		for _, hw := range hws {
+			if hw.Link == l {
+				b = true
+				if hw.Time.After(t) {
+					sendError(w, r, "No permissions to view this page", "history.html")
+					return
+				}
+			}
+		}
+		if !b {
+				sendError(w, r, "No permissions to view this page", "history.html")
+				return
+		}
 	}
 
 	w.Header().Set("Content-Disposition", "attachment; filename=" + file)
