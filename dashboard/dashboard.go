@@ -19,6 +19,8 @@ type Dashboard struct {
 
 func GetDashboard(user string) Dashboard {
 	homeworks := hw.ReadHomeworks(user)
+	tms := admin.GetTeamMarks("pesho")
+	t := tms[user]
 	ch := admin.GetActiveChallenge()
 	act := time.Now().UTC().Before(ch.EndTime.UTC())
 	dashboard := Dashboard{
@@ -26,6 +28,7 @@ func GetDashboard(user string) Dashboard {
 		Name:    teams.GetTeamName(user),
 		Challenge: ch,
 		Homeworks: make(map[string][]hw.Homework),
+		Marks: t.Marks,
 	}
 	for _, homework := range homeworks {
 		if dashboard.Homeworks[homework.Task] == nil {

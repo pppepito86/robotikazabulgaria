@@ -159,6 +159,9 @@
               {{end}}
 							</tbody>
 						</table>
+            {{$mark := index $.Marks $element.Name}}
+            {{$mark.Comment}}
+
             {{end}}
 					</div>
 					<div class="clear"></div>
