@@ -52,10 +52,8 @@ func handleGuest(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/login.html" {
 		if r.Method == "POST" {
 			if postLogin(w, r) {
-				fmt.Println("login successful")
 				http.Redirect(w, r, "/home.html", http.StatusFound)
 			} else {
-				fmt.Println("login failed")
 				sendError(w, r, "Грешни данни за вход", "/login.html")
 			}
 		} else {
@@ -98,13 +96,9 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, admin.GetCurrentResults())
 		return
 	}
-
 	fmt.Println("**************", r.URL.Path)
 	if r.URL.Path == "/admin_challenges.html" {
-		fmt.Println("challenges request")
-		fmt.Println("method", r.Method)
 		if r.Method == "POST" {
-			fmt.Println("post")
 			admin.UpdateChallenge(r)
 		}
 		t, _ := template.ParseFiles("admin_challenges.html")
@@ -137,9 +131,6 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		} else {
 		if r.Method == "POST" {
 			r.ParseForm()
-			fmt.Println("id", r.Form["id"])
-			fmt.Println("city", r.Form["city"])
-			fmt.Println("school", r.Form["school"])
 			teams.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
 		}
 		t, _ := template.ParseFiles("admin.html")
@@ -172,10 +163,8 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.URL.Path == "/tasks.html" && r.Method == "POST" {
 		r.ParseForm()
-		fmt.Println("len", r.Form["operation"])
 		if len(r.Form["operation"]) == 0 {
 			homework, err := upload(w, r)
-			fmt.Println("Upload error", err)
 			if err == nil {
 				hw.AddHomework(getUser(*r), homework)
 				http.Redirect(w, r, "/tasks.html", http.StatusFound)
@@ -190,7 +179,6 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 		download(w, r)
 		return
 	}
-	fmt.Println("******", r.URL.Path[1:])
 	t, err := template.ParseFiles(r.URL.Path[1:])
 	if err != nil {
 		http.Redirect(w, r, "/home.html", http.StatusFound)
@@ -205,9 +193,7 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 		t.Execute(w, tt.UnixNano()/1000000)
 	} else if r.URL.Path == "/tasks.html" {
 		r.ParseForm()
-		fmt.Println(r.Form["operation"])
 		if len(r.Form["operation"]) != 0 {
-			fmt.Println("delete")
 			if r.Form["operation"][0] == "delete" {
 				hw.DeleteHomework(getUser(*r), r.Form["id"][0])
 			}
@@ -303,13 +289,11 @@ func upload(w http.ResponseWriter, r *http.Request) (hw.Homework, error) {
 	fp := ws.GetFilePath(getUser(*r), fn)
 	out, err := os.Create(fp)
 	if err != nil {
-		fmt.Println(err)
 		return hw.Homework{}, errors.New("Възникна грешка с качването на файла")
 	}
 	defer out.Close()
 	_, err = io.Copy(out, file)
 	if err != nil {
-		fmt.Println(err)
 		return hw.Homework{}, errors.New("Възникна грешка с качването на файла")
 	}
 	return hw.Homework{header.Filename, "/download?user=" + getUser(*r) + "&file=" + fn, r.Form["description"][0], r.Form["task"][0], t}, nil
@@ -320,13 +304,11 @@ func getUser(r http.Request) string {
 }
 func isLoggedIn(r http.Request) bool {
 	cookie := getSessionIdCookie(r)
-	fmt.Println("session Cookie is:", cookie.Value)
 	return session.ContainsKey(cookie.Value)
 }
 
 func isAdmin(r http.Request) bool {
 	cookie := getSessionIdCookie(r)
-	fmt.Println("session Cookie is:", cookie.Value)
 	name := session.GetAttribute(cookie.Value)
 	return user.ContainsUser(name)
 }
@@ -348,15 +330,12 @@ func postLogin(w http.ResponseWriter, r *http.Request) bool {
 	r.ParseForm()
 	user := r.Form["username"]
 	pass := r.Form["password"]
-	fmt.Println("user", user)
-	fmt.Println("pass", pass)
 	if len(user) != 1 || len(pass) != 1 {
 		return false
 	}
 	return login(w, *r, user[0], pass[0])
 }
 func login(w http.ResponseWriter, r http.Request, username string, password string) bool {
-	fmt.Println("username:", username, "password:", password)
 	if !user.Authenticate(username, password) &&
 		!teams.Authenticate(username, password) {
 		return false
@@ -368,7 +347,6 @@ func login(w http.ResponseWriter, r http.Request, username string, password stri
 	cookie := http.Cookie{Name: "session.id", Value: val}
 	http.SetCookie(w, &cookie)
 	session.SetAttribute(val, username)
-	fmt.Println("set session cookie", val)
 	return true
 }
 

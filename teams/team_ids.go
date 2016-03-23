@@ -2,7 +2,6 @@ package teams
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"robotikazabulgaria/ws"
@@ -42,7 +41,6 @@ func GetTeamIds() TeamIdArray {
 	if err != nil {
 		teamIds = make([]TeamId, 0)
 	}
-	fmt.Println(teamIds)
 	sort.Sort(teamIds)
 	return teamIds
 }

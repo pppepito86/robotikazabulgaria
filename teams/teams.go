@@ -3,7 +3,6 @@ package teams
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"robotikazabulgaria/ws"
@@ -142,7 +141,6 @@ func GetTeams() []Team {
 	if err != nil {
 		teams = make([]Team, 0)
 	}
-	fmt.Println(teams)
 	return teams
 }
 

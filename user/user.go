@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"robotikazabulgaria/ws"
 )
 
@@ -16,7 +15,6 @@ func readUsers() map[string]string {
 		users = make(map[string]string)
 		users["pesho"] = "test"
 	}
-	fmt.Println(users)
 	return users
 }
 
@@ -25,7 +23,6 @@ func RandomString() string {
 	rb := make([]byte, size)
 	rand.Read(rb)
 	rs := base64.URLEncoding.EncodeToString(rb)
-	fmt.Println("Generated id:", rs)
 	return rs
 }
 

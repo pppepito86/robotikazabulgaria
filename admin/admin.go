@@ -3,7 +3,6 @@ package admin
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -55,14 +54,12 @@ type PageChallenges struct {
 }
 
 func GetPageChallenges(id string) PageChallenges {
-	fmt.Println("challenge id", id)
 	challenges := GetChallenges()
 	index := -1
 	if len(challenges.Challenges) > 0 {
 		index = 0
 	}
 	for i, element := range challenges.Challenges {
-		fmt.Println("***challenge id", id, element.Id)
 		if element.Id == id {
 			index = i
 			break
@@ -75,17 +72,13 @@ func GetPageChallenges(id string) PageChallenges {
 }
 
 func UpdateChallenge(r *http.Request) {
-	fmt.Println("updating challenge")
 	h := r.Header.Get("Content-Type")
-	fmt.Println("header", h)
 	if !strings.HasPrefix(h, "multipart") {
 		r.ParseForm() 
-		fmt.Println("no error")
 		if len(r.Form["operation"]) != 1 {
 			return
 		}
 		operation := r.Form["operation"][0]
-		fmt.Println("operation", operation)
 		if operation == "new_challenge" {
 			createChallenge(r)
 		} else if operation == "challenge_task" {
@@ -100,15 +93,12 @@ func UpdateChallenge(r *http.Request) {
 		return
 	}
 
-	fmt.Println("error")
 	file, header, _ := r.FormFile("file")
 	if len(r.Form["operation"]) != 1 {
 		return
 	}
 	operation := r.Form["operation"][0]
-	fmt.Println("operation", operation)
 	if operation == "task_document" {
-		fmt.Println("upload")
 		uploadDocument(r, file, header)
 	} else if operation == "additional_document" {
 		additionalDocument(r, file, header)
@@ -117,22 +107,18 @@ func UpdateChallenge(r *http.Request) {
 
 func activateChallenge(r *http.Request) {
 	id := r.Form["challenge"][0]
-	fmt.Println("Activationg challenge", id)
 	challenges := GetChallenges()
 	challenges.ActiveChallenge = id
-	fmt.Println("New challenges", challenges)
 	writeChallenges(challenges)
 	updateStatus(id, "")
 }
 
 func createAdditional(r *http.Request) {
-	fmt.Println("Creating Additional")
 	if len(r.Form["challenge"]) != 1 ||
 		len(r.Form["category"]) != 1 ||
 		len(r.Form["name"]) != 1 {
 		return
 	}
-	fmt.Println("Creating Additional2")
 	cc := r.Form["challenge"][0]	
 	category := r.Form["category"][0]	
 	ttt := time.Now().UTC()
@@ -159,7 +145,6 @@ func createAdditional(r *http.Request) {
 	}
 	ch := &challenges.Challenges[idx]
 	ch.AdditionalDocuments = append(ch.AdditionalDocuments, t)
-	fmt.Println("Creating Additional2", challenges)
 	writeChallenges(challenges)
 }
 
@@ -233,13 +218,9 @@ func createChallenge(r *http.Request) {
 	name := r.Form["name"][0]	
 //	startTime := r.Form["start_time"][0]	
 	endTime := r.Form["end_time"][0]	
-	fmt.Println("endTime", endTime)
 	timeSplit := strings.Split(endTime, " ")
-	fmt.Println("split", timeSplit)
 	dd := strings.Split(timeSplit[0], "-")
-	fmt.Println("dd", dd)
 	hh := strings.Split(timeSplit[1], ":")
-	fmt.Println("hh", hh)
 	y, _ := strconv.Atoi(dd[0])
 	M, _ := strconv.Atoi(dd[1])
 	d, _ := strconv.Atoi(dd[2])
@@ -256,14 +237,12 @@ func createChallenge(r *http.Request) {
 		Tasks: make([]Task, 0),
 		AdditionalDocuments: make([]Task, 0),
 	}
-	fmt.Println("Creating challenge", c)
 	challenges := GetChallenges()
 	challenges.Challenges = append(challenges.Challenges, c)
 	writeChallenges(challenges)
 }
 
 func writeChallenges(challenges *Challenges) {
-	fmt.Println("writing challenges", challenges)
 	file := ws.GetFilePath("challenges.json")
 	json, _ := json.Marshal(challenges)
 	os.Create(file)
@@ -280,14 +259,12 @@ func GetChallenges() *Challenges {
 			Challenges: make([]Challenge, 0),
 		}
 	}
-	fmt.Println("challenges", c)
 	return &c
 }
 
 
 func UploadTask(w http.ResponseWriter, r *http.Request) error {
 	task, err := createTask(w, r)
-	fmt.Println("fsdfsdfasd***", task)
 	if err != nil {
 		return err
 	}
@@ -296,7 +273,6 @@ func UploadTask(w http.ResponseWriter, r *http.Request) error {
 }
 
 func additionalDocument(r *http.Request, file multipart.File, header *multipart.FileHeader) {
-	fmt.Println("uploadDocument")
 	//r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
 	challenges := GetChallenges()
 	challengeStr := r.Form["challenge"][0]
@@ -314,23 +290,19 @@ func additionalDocument(r *http.Request, file multipart.File, header *multipart.
 			break
 		}
 	}
-	fmt.Println("task", task)
 	link := r.Form["link"][0]
 	ttt := time.Now().UTC()
 	if len(link) == 0 {
 		defer file.Close()
 		fn := task.Category + "_" + strconv.FormatInt(ttt.UnixNano(), 16) + filepath.Ext(header.Filename)
 		fp := ws.GetFilePath("docs", fn)
-		fmt.Println("Path***", fp)
 		out, err := os.Create(fp)
 		if err != nil {
-			fmt.Println(err)
 			return
 		}
 		defer out.Close()
 		_, err = io.Copy(out, file)
 		if err != nil {
-			fmt.Println(err)
 			return
 		}
 		link = "/docs/" + fn
@@ -341,14 +313,12 @@ func additionalDocument(r *http.Request, file multipart.File, header *multipart.
 		DocType: r.Form["type"][0],
 		Time: ttt,
 	}
-	fmt.Println("document", document)
 	task.Documents = append(task.Documents, document)
 	writeChallenges(challenges)
 }
 
 
 func uploadDocument(r *http.Request, file multipart.File, header *multipart.FileHeader) {
-	fmt.Println("uploadDocument")
 	//r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
 	challenges := GetChallenges()
 	challengeStr := r.Form["challenge"][0]
@@ -366,23 +336,19 @@ func uploadDocument(r *http.Request, file multipart.File, header *multipart.File
 			break
 		}
 	}
-	fmt.Println("task", task)
 	link := r.Form["link"][0]
 	ttt := time.Now().UTC()
 	if len(link) == 0 {
 		defer file.Close()
 		fn := task.Category + "_" + strconv.FormatInt(ttt.UnixNano(), 16) + filepath.Ext(header.Filename)
 		fp := ws.GetFilePath("docs", fn)
-		fmt.Println("Path***", fp)
 		out, err := os.Create(fp)
 		if err != nil {
-			fmt.Println(err)
 			return
 		}
 		defer out.Close()
 		_, err = io.Copy(out, file)
 		if err != nil {
-			fmt.Println(err)
 			return
 		}
 		link = "/docs/" + fn
@@ -393,7 +359,6 @@ func uploadDocument(r *http.Request, file multipart.File, header *multipart.File
 		DocType: r.Form["type"][0],
 		Time: ttt,
 	}
-	fmt.Println("document", document)
 	task.Documents = append(task.Documents, document)
 	writeChallenges(challenges)
 }
@@ -409,10 +374,8 @@ func GetActiveChallenge() Challenge {
 }
 
 func createTask(w http.ResponseWriter, r *http.Request) ([]Task, error) {
-	fmt.Println("creating task*****")
 	r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
 	file, header, _ := r.FormFile("file")
-	fmt.Println("header", header)
 	ttt := GetTasks()
 	task := &Task{}
 	for idx, tt := range ttt {
@@ -422,8 +385,6 @@ func createTask(w http.ResponseWriter, r *http.Request) ([]Task, error) {
 		}
 	}
 	task.DisplayName = "pesho"
-	fmt.Println("pesho", task)
-	fmt.Println("pesho", ttt)
 	if len(task.Name) == 0 {
 		task.Name = r.Form["name"][0]
 		task.Time = time.Now().UTC()
@@ -440,16 +401,13 @@ func createTask(w http.ResponseWriter, r *http.Request) ([]Task, error) {
 		defer file.Close()
 		fn := task.Category + "_" + strconv.FormatInt(task.Time.UnixNano(), 16) + filepath.Ext(header.Filename)
 		fp := ws.GetFilePath("tasks", fn)
-		fmt.Println("Path***", fp)
 		out, err := os.Create(fp)
 		if err != nil {
-			fmt.Println(err)
 			return ttt, errors.New("Problems writing the file. Contact system admins for help")
 		}
 		defer out.Close()
 		_, err = io.Copy(out, file)
 		if err != nil {
-			fmt.Println(err)
 			return ttt, errors.New("Problems writing the file. Contact system admins for help")
 		}
 		link = "/docs/" + fn
@@ -463,8 +421,6 @@ func createTask(w http.ResponseWriter, r *http.Request) ([]Task, error) {
 		task.Documents = make([]Document, 0)
 	}
 	task.Documents = append(task.Documents, document)
-	fmt.Println("task", task)
-	fmt.Println("ttt", ttt)
 	return ttt, nil
 }
 
@@ -482,7 +438,6 @@ func GetTasks() []Task {
 	if err != nil {
 		t = make([]Task, 0)
 	}
-	fmt.Println(t)
 	return t
 }
 
@@ -508,7 +463,6 @@ type JudgeDashboard struct {
 
 func GetJudgeDashboard(username string, task string) JudgeDashboard {
 	challenge := GetActiveChallenge()
-	fmt.Println("Active Challenge", challenge)
 	if len(challenge.Tasks) == 0 {
 		return JudgeDashboard{Homeworks: make([]TeamHomeworks, 0)}
 	}
@@ -537,7 +491,6 @@ func GetJudgeDashboard(username string, task string) JudgeDashboard {
 		}
 		jd.Homeworks = append(jd.Homeworks, th)
 	}
-	fmt.Println("judge dashboar", jd)
 	return jd
 }
 
@@ -558,7 +511,6 @@ func GetTeamMarks(username string) map[string]TeamMark {
 	if err != nil {
 		m = make(map[string]TeamMark)
 	}
-	fmt.Println(m)
 	return m
 }
 
@@ -646,8 +598,8 @@ func GetCurrentResults() DisplayResults {
 
 func GetFinishedResults() DisplayResults {
 	challenges := GetChallenges()
-	for _, c := range challenges.Challenges {
-		fmt.Println("challenge", c)
+	for i := len(challenges.Challenges)-1; i>=0; i-- {
+		c := challenges.Challenges[i]
 		if c.State == "finished" {
 			return GetResults(c)
 		}
@@ -658,7 +610,6 @@ func GetFinishedResults() DisplayResults {
 func GetLastFinishedChallenge() time.Time {
 	challenges := GetChallenges()
 	for _, c := range challenges.Challenges {
-		fmt.Println("challenge", c)
 		if c.State == "finished" {
 			return c.EndTime
 		}
@@ -690,7 +641,6 @@ func GetResults(challenge Challenge) DisplayResults {
 
 		tmrs = append(tmrs, tr)
 	}
-	fmt.Println("results", tmrs)
 	sort.Sort(tmrs)
 	return DisplayResults{
 		CurrentChallenge: challenge,

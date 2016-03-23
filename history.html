@@ -83,7 +83,7 @@
 			<div class="content"><div class="ic">More Website Templates @ TemplateMonster.com - April 21, 2014!</div>
 				<div class="container_12" style="padding-top: 30px">
 					<div class="grid_4">
-						<h3>Задания</h3>
+						<h3>Отбори</h3>
 						<ul class="list1 color1">
 							<li><a href="#"></a></li>
 						  {{range $index, $element := .Teams}}
@@ -119,6 +119,8 @@
               {{end}}
 							</tbody>
             </table>
+            {{$mark := index $.Marks $element.Name}}
+            {{$mark.Comment}}
             {{end}}
 					</div>
 					<div class="clear"></div>

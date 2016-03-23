@@ -5,7 +5,6 @@ import (
 	"robotikazabulgaria/teams"
 	"robotikazabulgaria/admin"
 	"time"
-	"fmt"
 )
 
 type Dashboard struct {
@@ -40,6 +39,7 @@ func GetDashboard(user string) Dashboard {
 }
 
 func GetHistoryDashboard(user string, team string) Dashboard {
+	origUser := user
 	if len(team) > 0 {
 		user = team
 	}
@@ -48,10 +48,10 @@ func GetHistoryDashboard(user string, team string) Dashboard {
 	t := tms[user]
 	//m := t.Marks[taskname]
 	
-	fmt.Println("team marks", t)
 	chs := admin.GetChallenges()
 	ch := admin.Challenge{}
-	for _, ccc := range chs.Challenges {
+	for iii := len(chs.Challenges)-1; iii >= 0; iii-- {
+		ccc := chs.Challenges[iii]
 		if ccc.State == "finished" {
 			ch = ccc
 			break
@@ -66,8 +66,10 @@ func GetHistoryDashboard(user string, team string) Dashboard {
 		Name:    teams.GetTeamName(user),
 		Challenge: ch,
 		Homeworks: make(map[string][]hw.Homework),
-		Marks: t.Marks,
 		Teams: teams.GetTeams(),
+	}
+	if origUser == user {
+		dashboard.Marks = t.Marks
 	}
 	for _, homework := range homeworks {
 		if dashboard.Homeworks[homework.Task] == nil {
