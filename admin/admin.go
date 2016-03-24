@@ -609,7 +609,8 @@ func GetFinishedResults() DisplayResults {
 
 func GetLastFinishedChallenge() time.Time {
 	challenges := GetChallenges()
-	for _, c := range challenges.Challenges {
+	for i:= len(challenges.Challenges) - 1; i >= 0; i-- {
+		c := challenges.Challenges[i]
 		if c.State == "finished" {
 			return c.EndTime
 		}
