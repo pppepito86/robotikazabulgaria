@@ -4,13 +4,17 @@
     <meta charset="UTF-8">
     <title>Регистрация</title>
 	<link rel="stylesheet" href="css/login.css">
+	<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
   </head>
   <body>
     <div class="wrapper">
-	<div class="container" style="padding-top: 5px">
+	<div class="container" style="padding-top: 5px; " id="successlabel">
+		<h2>Регистрацията е успешна</h2>
+	</div>
+	<div class="container" style="padding-top: 5px" id="form">
 		<h1>Здравейте!</h1>
 		
-		<form class="form" action="/preregistration.html" method="post">
+		<form class="form" action="/preregistration.html" method="post" >
 			<label>Име на отбора</label><input type="text" name="username" />
 			<label>Град</label><input type="text" name="city" />
 			<label>Училище</label><input type="text" name="school" />
@@ -18,9 +22,11 @@
 			<label>Телефон за връзка с ментор 1</label><input type="tel" name="coachPhone1" />
 			<label>Име на ментор 2</label><input type="text" name="coach2" />
 			<label>Телефон за връзка с ментор 2</label><input type="tel" name="coachPhone2" />
-			<label>Какъв опит с лего роботика има отбора?</label> </br> <textarea rows="4" cols="30"></textarea> <p><p>
+			<label>Какъв опит с лего роботика има отборът?</label> </br> <textarea rows="4" cols="30"></textarea> <p><p>
 			<button type="submit" id="login-button">Регистрация</button>
 		</form>
+		
+		
 	</div>
 	
 	<ul class="bg-bubbles">
@@ -35,8 +41,21 @@
 		<li></li>
 		<li></li>
 	</ul>
+	
+	
 </div>
-    <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script> 
+
+	if(window.location.href.endsWith("success")) {
+		$( "#form" ).hide();
+		
+	} else {
+		$("#successlabel").hide();
+	}
+	</script>
+    
         <!--script src="js/login.js"></script-->
   </body>
 </html>
+
+

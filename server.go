@@ -12,7 +12,7 @@ import (
 import "net/http"
 import "html/template"
 import "io"
-
+import "io/ioutil"
 import "os"
 
 import (
@@ -31,7 +31,7 @@ func main() {
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("js"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("work_dir/docs"))))
-	http.Handle("/files/", http.StripPrefix("/files/", http.FileServer(http.Dir("docs"))))
+	http.Handle("/files/", http.StripPrefix("/files/", http.FileServer(http.Dir("files"))))
 	
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":80", nil)
@@ -60,6 +60,29 @@ func handleGuest(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			t, _ := template.ParseFiles("login.html")
+			t.Execute(w, nil)
+		}
+	} else if r.URL.Path == "/preregistration.html" {
+		if r.Method == "POST" {
+			//r.ParseForm()
+			//fmt.Println(r.Form)
+			
+body, _ := ioutil.ReadAll(r.Body)
+file := "work_dir/docs/prereg"
+f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0777)
+
+defer f.Close()
+
+if err != nil {
+  fmt.Println(err.Error())
+}
+
+f.WriteString(string(body))
+f.WriteString("\n")
+
+http.Redirect(w, r, "/preregistration.html?success", http.StatusFound)
+		} else {	
+			t, _ := template.ParseFiles("preregistration.html")
 			t.Execute(w, nil)
 		}
 	} else if r.URL.Path == "/register.html" {
