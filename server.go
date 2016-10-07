@@ -31,6 +31,8 @@ func main() {
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("js"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("work_dir/docs"))))
+	http.Handle("/files/", http.StripPrefix("/files/", http.FileServer(http.Dir("docs"))))
+	
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8080", nil)
 }
