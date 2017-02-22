@@ -32,9 +32,9 @@ func main() {
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 	http.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("work_dir/docs"))))
 	http.Handle("/files/", http.StripPrefix("/files/", http.FileServer(http.Dir("files"))))
-	
+
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":80", nil)
+	http.ListenAndServe(":9999", nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -66,22 +66,22 @@ func handleGuest(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "POST" {
 			//r.ParseForm()
 			//fmt.Println(r.Form)
-			
-body, _ := ioutil.ReadAll(r.Body)
-file := "work_dir/docs/prereg"
-f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0777)
 
-defer f.Close()
+			body, _ := ioutil.ReadAll(r.Body)
+			file := "work_dir/docs/prereg"
+			f, err := os.OpenFile(file, os.O_APPEND|os.O_WRONLY, 0777)
 
-if err != nil {
-  fmt.Println(err.Error())
-}
+			defer f.Close()
 
-f.WriteString(string(body))
-f.WriteString("\n")
+			if err != nil {
+				fmt.Println(err.Error())
+			}
 
-http.Redirect(w, r, "/preregistration.html?success", http.StatusFound)
-		} else {	
+			f.WriteString(string(body))
+			f.WriteString("\n")
+
+			http.Redirect(w, r, "/preregistration.html?success", http.StatusFound)
+		} else {
 			t, _ := template.ParseFiles("preregistration.html")
 			t.Execute(w, nil)
 		}
@@ -107,6 +107,15 @@ http.Redirect(w, r, "/preregistration.html?success", http.StatusFound)
 }
 
 func handleAdmin(w http.ResponseWriter, r *http.Request) {
+	if strings.Index(r.URL.Path, "/division/") == 0 {
+		split := strings.Split(r.URL.Path, "/")
+		if len(split) == 4 {
+			teamId := split[2]
+			division := split[3]
+			teams.ChangeDivision(teamId, division)
+		}
+		return
+	}
 	if r.URL.Path == "/index.html" {
 		logout(w, *r)
 		http.Redirect(w, r, "/index.html", http.StatusFound)
@@ -131,7 +140,7 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.URL.Path != "/admin.html" && r.URL.Path != "/points.html"{
+	if r.URL.Path != "/admin.html" && r.URL.Path != "/points.html" {
 		http.Redirect(w, r, "/admin.html", http.StatusFound)
 		return
 	}
@@ -153,7 +162,7 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 		t, _ := template.ParseFiles("admin_tasks.html")
 		t.Execute(w, admin.GetTasks())
 		return
-		} else {
+	} else {
 		if r.Method == "POST" {
 			r.ParseForm()
 			teams.AddTeamId(r.Form["id"][0], r.Form["city"][0], r.Form["school"][0])
@@ -176,7 +185,7 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.URL.Path == "/history.html" {
 		t, _ := template.ParseFiles("history.html")
-		t.Execute(w, dashboard.GetHistoryDashboard(getUser(*r),r.URL.Query().Get("team")))
+		t.Execute(w, dashboard.GetHistoryDashboard(getUser(*r), r.URL.Query().Get("team")))
 		return
 	}
 	if r.URL.Path == "/login.html" ||
@@ -258,7 +267,7 @@ func download(w http.ResponseWriter, r *http.Request) {
 		t := admin.GetLastFinishedChallenge()
 		hws := hw.ReadHomeworks(user)
 		b := false
-		l := "/download?user="+user+"&file="+file
+		l := "/download?user=" + user + "&file=" + file
 		for _, hw := range hws {
 			if hw.Link == l {
 				b = true
@@ -269,12 +278,12 @@ func download(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if !b {
-				sendError(w, r, "No permissions to view this page", "history.html")
-				return
+			sendError(w, r, "No permissions to view this page", "history.html")
+			return
 		}
 	}
 
-	w.Header().Set("Content-Disposition", "attachment; filename=" + file)
+	w.Header().Set("Content-Disposition", "attachment; filename="+file)
 	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 	http.ServeFile(w, r, ws.GetFilePath(user, file))
 }
@@ -381,4 +390,3 @@ func logout(w http.ResponseWriter, r http.Request) {
 	cookie := http.Cookie{Name: "session.id", Value: val, MaxAge: -1}
 	http.SetCookie(w, &cookie)
 }
-

@@ -82,13 +82,14 @@
 							</colgroup>
 							<tbody>
               {{if .}}
-              <tr><th>ИД</th><th>Отбор</th><th>Град</th><th>Училище</th><th></th></tr>
+              <tr><th>ИД</th><th>Отбор</th><th>Град</th><th>Училище</th><th>Дивизия</th></tr>
 								{{range $index, $element := .}}
 								<tr>
 							 		<td>{{$element.Id}}</td>
 							 		<td>{{$element.Name}}</td>
 									<td>{{$element.City}}</td>
 									<td>{{$element.School}}</td>
+									<td>{{$element.Division}}</td>
               		<!--td><form method="post" action="#">
 									<input type="hidden" name="operation" value="delete" />
 									<input type="hidden" name="id" value="{{$element.Id}}" />

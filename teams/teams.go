@@ -11,12 +11,13 @@ import (
 )
 
 type Team struct {
-	Name   string
-	Pass   string
-	City   string
-	School string
-	Id     string
-	Time   time.Time
+	Name     string
+	Pass     string
+	City     string
+	School   string
+	Id       string
+	Time     time.Time
+	Division string
 }
 
 func RegisterTeam(team, pass1, pass2, city, school, id string) error {
@@ -35,7 +36,7 @@ func RegisterTeam(team, pass1, pass2, city, school, id string) error {
 	} else if err := checkIdIsOK(id); err != nil {
 		return err
 	}
-	t := Team{team, pass1, city, school, id, time.Now()}
+	t := Team{team, pass1, city, school, id, time.Now(), "1"}
 	AddTeam(t)
 	return nil
 }
@@ -194,4 +195,17 @@ func GetTeamName(id string) string {
 		}
 	}
 	return ""
+}
+
+func ChangeDivision(teamId, division string) {
+	if division != "1" && division != "2" {
+		return
+	}
+	teams := GetTeams()
+	for i, team := range teams {
+		if team.Id == teamId {
+			teams[i].Division = division
+		}
+	}
+	writeTeams(teams)
 }
