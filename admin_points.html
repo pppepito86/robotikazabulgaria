@@ -104,8 +104,8 @@
                     {{$element2.Description}}<br /> 
                     {{end}}
                   </td>
-                  <td><input type="text" size="5" id="text_{{$element.Id}}" value="{{$element.Mark}}" onblur="changePoints(this);" /></td>
-                  <td><textarea cols="60" rows="10" id="area_{{$element.Id}}" onblur="changePoints(this);" >{{$element.Comment}}</textarea></td>
+                  <td><input type="text" class="fieldPoints" size="5" id="text_{{$element.Id}}" value="{{$element.Mark}}" onblur="changePoints(this);" /></td>
+                  <td><textarea class="fieldComments" cols="60" rows="10" id="area_{{$element.Id}}" onblur="changePoints(this);" >{{$element.Comment}}</textarea></td>
 								</tr>
 								{{end}}
                 <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
@@ -117,7 +117,10 @@
 							{{end}}
 							</tbody>
 						</table>
-					
+                        
+                        Enter CSV in the format [points, comment,] here to fill all blanks: </br>
+                        <textarea id="csv" rows="10" cols="50"></textarea>
+					     <button onclick="fillCSV()">Fill</button>
 					<!--table class="task-table">
 							<colgroup><col>
 							</colgroup>
@@ -166,6 +169,25 @@
 				<div class="clear"></div>
 			</div>
 		</footer>
+        
+    <script>
+    function fillCSV() {
+        let csv = $("#csv").val();
+        
+        let rows = csv.split('\n');
+
+        let points = $(".fieldPoints");
+        let comments = $(".fieldComments");
+
+        let numItems = Math.min(points.length, comments.length, rows.length);
+
+        for(let i = 0; i < numItems; i++) {
+            let tokens = rows[i].split('\t');
+            $(points[i]).val(tokens[0]);
+            $(comments[i]).val(tokens[1]);
+        }
+    }
+    </script>
 		
 		
 	</body>
