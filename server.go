@@ -154,7 +154,7 @@ func handleAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 	if r.URL.Query().Get("page") == "registered_teams" {
 		t, _ := template.ParseFiles("admin_registered_teams.html")
-		t.Execute(w, teams.GetTeams())
+		t.Execute(w, teams.GetTeams("0"))
 	} else if r.URL.Query().Get("page") == "tasks" {
 		if r.Method == "POST" {
 			admin.UploadTask(w, r)
@@ -178,9 +178,14 @@ func handleTeam(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/index.html", http.StatusFound)
 		return
 	}
-	if r.URL.Path == "/results.html" {
-		t, _ := template.ParseFiles("results.html")
-		t.Execute(w, admin.GetFinishedResults())
+	if r.URL.Path == "/results1.html" {
+		t, _ := template.ParseFiles("results1.html")
+		t.Execute(w, admin.GetFinishedResults("1"))
+		return
+	}
+	if r.URL.Path == "/results2.html" {
+		t, _ := template.ParseFiles("results2.html")
+		t.Execute(w, admin.GetFinishedResults("2"))
 		return
 	}
 	if r.URL.Path == "/history.html" {

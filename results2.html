@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Membership</title>
+		<meta charset="utf-8">
+		<meta name = "format-detection" content = "telephone=no" />
+		<link rel="icon" href="images/favicon.ico">
+		<link rel="shortcut icon" href="images/favicon.ico" />
+		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/table.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+		
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-migrate-1.2.1.js"></script>
+		<script src="js/script.js"></script>
+		<script src="js/superfish.js"></script>
+		<!-- <script src="js/jquery.ui.totop.js"></script> -->
+		<script src="js/jquery.equalheights.js"></script>
+		<script src="js/jquery.mobilemenu.js"></script>
+		<script src="js/admin.js"></script>
+
+		<script>
+			$(document).ready(function(){
+				// $().UItoTop({ easingType: 'easeOutQuart' });
+			});
+		</script>
+		<!--[if lt IE 8]>
+		<div style=' clear: both; text-align:center; position: relative;'>
+			<a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home?ocid=ie6_countdown_bannercode">
+				<img src="http://storage.ie6countdown.com/assets/100/images/banners/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today." />
+			</a>
+		</div>
+		<![endif]-->
+		<!--[if lt IE 9]>
+			<script src="js/html5shiv.js"></script>
+			<link rel="stylesheet" media="screen" href="css/ie.css">
+		<![endif]-->
+	</head>
+	<body class="" id="top">
+		
+		
+		<div class="main">
+<!--==============================header=================================-->
+			<header>
+				<div class="container_12">
+					<div class="grid_12">
+						<h1 class="center">
+							<!--a href="index.html">
+								<img src="images/logo.png" alt="Your Happy Family">
+							</a-->
+							Роботика за България
+						</h1><p>
+						<div class="menu_block">
+							<nav class="horizontal-nav full-width horizontalNav-notprocessed">
+								<ul class="sf-menu">
+                  <li><a href="home.html">Начало</a></li>
+									<!-- <li><a href="profile.html">Профил</a></li> -->
+									<li ><a href="tasks.html">Задания</a></li>
+									<li  ><a href="results1.html">Резултати A</a></li>
+									<li class="current" ><a href="results2.html">Резултати B</a></li>
+									<li><a href="history.html">История</a></li>
+								</ul>
+							</nav>
+							<div class="clear"></div>
+						</div>
+					</div>
+					<div class="clear"></div>
+				</div>
+			</header>
+<!--==============================Content=================================-->
+			<div class="content"><div class="ic">More Website Templates @ TemplateMonster.com - April 21, 2014!</div>
+				<div class="container_12" >
+					<!--div class="grid_4">
+						<h3>Задачи</h3>
+						<ul class="list1 color1">
+							<li><a href="#"></a></li>
+              <li><a href="points.html?page=team" >Екипна задача</a></li>
+              <li><a href="points.html?page=project" >Проектна задача</a></li>
+              <li><a href="points.html?page=robot" >Робо мисия</a></li>
+						</ul>
+					</div-->
+					<div class="grid_12">
+            <!--h3 class="center">Results</h3-->
+						<table class="task-table">
+							<colgroup><col>
+							</colgroup>
+							<tbody>
+							{{if .CurrentChallenge.Tasks}}
+              <tr><th>ИД</th><th>Отбор</th>
+								{{range $index, $element := .CurrentChallenge.Tasks}}
+                  <th>{{$element.DisplayName}}</th>
+                {{end}}
+              </tr>
+								{{range $index, $element := .AllResults}}
+								<tr>
+							 		<td>{{$element.Id}}</td>
+							 		<td>{{$element.Name}}</td>
+								  {{range $index, $p := $element.Stars}}
+                  <td>
+                     {{if eq $p 0}}
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 1}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 2}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 3}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 4}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star-o" style="font-size:18pt" />
+                    {{end}}
+                    {{if eq $p 5}}
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    <span class="fa fa-star" style="font-size:18pt" />
+                    {{end}}
+                  </td>
+                  {{end}}
+								</tr>
+								{{end}}
+                <tr>
+                <td></td><td></td>
+								{{range $index, $element := .CurrentChallenge.Tasks}}
+                <td></td>
+                {{end}}
+                </tr>
+
+							{{else}}
+								<tr>
+								<td>Не е качено нищо</td>
+								</tr>
+								<tr><td></td> </tr>
+							{{end}}
+							</tbody>
+						</table>
+					
+					<!--table class="task-table">
+							<colgroup><col>
+							</colgroup>
+							<tbody>
+							<tr>
+							<td>Не е качено нищо</td>
+							</tr>
+							<tr><td></td> </tr>
+							</tbody>
+						</table-->
+						
+						<!--
+						<img src="images/page4_img1.jpg" alt="" class="img_inner fleft">
+						<div class="extra_wrapper">
+							<p class="color1"><a href="#">Damus at magna non nunc tristique rhoncuseri tym. Aliquam nibh ante, egestas id dictum aterert</a></p>
+							Tcommodo re luctus libero. Praesent faucibusertulomi malesuada cibuste. Donec laoreet metus id laoreetert malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur orci sed ertoli molo Curabitur vel lorem sit amet nulla ullamcorper fermentum. In vitae varius augue, eu consectetur ligula. Etiam dui eros, laoreet sit amet est vel, commodo venenatis eroswe.
+						</div>
+						<div class="clear"></div>
+						<div class="grid_3 alpha">
+							<h3 class="h3__head2">Club Committee</h3>
+							<ul class="list2">
+								<li><span class="color1"><a href="#">Club Captain:</a></span> Mark Johnson</li>
+								<li><span class="color1"><a href="#">Ladies Captain:</a></span> Linda Grosh</li>
+								<li><span class="color1"><a href="#">Secretary:</a></span> Patrick Pool</li>
+								<li><span class="color1"><a href="#">Social Secretary:</a></span> John Priston</li>
+								<li><span class="color1"><a href="#">Treasures:</a></span> Jessica Wood</li>
+								<li><span class="color1"><a href="#">Assistant Captain:</a></span> Sam Kromstain</li>
+								<li><span class="color1"><a href="#">Dunbartonshire Rep:</a></span> John Franklin </li>
+								<li><span class="color1"><a href="#">Webmaster:</a></span> Mike Tomson</li>
+							</ul>
+						</div>
+						<div class="grid_5 omega">
+							<h3 class="h3__head2">Website Information</h3>
+							<p class="color1"><a href="#">Damus at magna non nunc tristique rhoncuseri tym. Aliquam nibh ante, egestas id dictum aterert</a></p>
+							Tcommodo re luctus libero. Praesent faucibusertulomi malesuada cibuste. Donec laoreet metus id laoreetert malesuada. Loremert ipsum dolor sit amet, consectetur adipiscing elit. Nullamer lomiter consectetur orci sed ertoli gerti lominuty wertto dertfrt csaertolimi molourabitur vel lorem sit amet nulla ullamcorper fermentum. In vitae varius augue, eu consectetur ligula. Etiam dui eros, laoreet sit amet est vel, commodo venenatis erosweret olopsce adipiscing quam id risus sagittis, non consequat lacus interdum.
+						</div>
+						-->
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+		</div>
+<!--==============================footer=================================-->
+		<footer>
+			<div class="container_12">
+				<div class="clear"></div>
+			</div>
+		</footer>
+		
+		
+	</body>
+</html>
+

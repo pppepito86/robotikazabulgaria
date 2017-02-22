@@ -5,51 +5,51 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"mime/multipart"
+	"net/http"
 	"os"
-	"sort"
 	"path/filepath"
-	"robotikazabulgaria/ws"
-	"robotikazabulgaria/teams"
 	"robotikazabulgaria/hw"
+	"robotikazabulgaria/teams"
+	"robotikazabulgaria/ws"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type Task struct {
-	Name      string
-	DisplayName      string
-	Category      string
-	Time      time.Time
-	Documents []Document
+	Name        string
+	DisplayName string
+	Category    string
+	Time        time.Time
+	Documents   []Document
 }
 
 type Document struct {
-	Id string
-	Link string
+	Id      string
+	Link    string
 	DocType string
-	Time time.Time
+	Time    time.Time
 }
 
 type Challenge struct {
-	Id string
-	Name string
-	State string
-	EndTime time.Time
-	CreateTime time.Time
-	Tasks []Task
+	Id                  string
+	Name                string
+	State               string
+	EndTime             time.Time
+	CreateTime          time.Time
+	Tasks               []Task
 	AdditionalDocuments []Task
 }
 
 type Challenges struct {
 	ActiveChallenge string
-	Challenges []Challenge
+	Challenges      []Challenge
 }
 
 type PageChallenges struct {
-	CurrentIndex int
+	CurrentIndex  int
 	AllChallenges Challenges
 }
 
@@ -66,7 +66,7 @@ func GetPageChallenges(id string) PageChallenges {
 		}
 	}
 	return PageChallenges{
-		CurrentIndex: index,
+		CurrentIndex:  index,
 		AllChallenges: *challenges,
 	}
 }
@@ -74,7 +74,7 @@ func GetPageChallenges(id string) PageChallenges {
 func UpdateChallenge(r *http.Request) {
 	h := r.Header.Get("Content-Type")
 	if !strings.HasPrefix(h, "multipart") {
-		r.ParseForm() 
+		r.ParseForm()
 		if len(r.Form["operation"]) != 1 {
 			return
 		}
@@ -119,18 +119,18 @@ func createAdditional(r *http.Request) {
 		len(r.Form["name"]) != 1 {
 		return
 	}
-	cc := r.Form["challenge"][0]	
-	category := r.Form["category"][0]	
+	cc := r.Form["challenge"][0]
+	category := r.Form["category"][0]
 	ttt := time.Now().UTC()
 	id := "extra_" + strconv.FormatInt(ttt.UnixNano(), 16)
-	name := r.Form["name"][0]	
+	name := r.Form["name"][0]
 
-	t := Task {
-		Name: id,
+	t := Task{
+		Name:        id,
 		DisplayName: name,
-		Category: category,
-		Time: ttt,
-		Documents: make([]Document, 0),
+		Category:    category,
+		Time:        ttt,
+		Documents:   make([]Document, 0),
 	}
 	challenges := GetChallenges()
 	idx := -1
@@ -152,8 +152,8 @@ func publishResults(r *http.Request) {
 	if len(r.Form["challenge"]) != 1 {
 		return
 	}
-	cc := r.Form["challenge"][0]	
-	updateStatus(cc, "finished") 
+	cc := r.Form["challenge"][0]
+	updateStatus(cc, "finished")
 }
 
 func updateStatus(cc string, status string) {
@@ -179,18 +179,18 @@ func createTask1(r *http.Request) {
 		len(r.Form["name"]) != 1 {
 		return
 	}
-	cc := r.Form["challenge"][0]	
-	category := r.Form["category"][0]	
+	cc := r.Form["challenge"][0]
+	category := r.Form["category"][0]
 	ttt := time.Now().UTC()
 	id := "task_" + strconv.FormatInt(ttt.UnixNano(), 16)
-	name := r.Form["name"][0]	
+	name := r.Form["name"][0]
 
-	t := Task {
-		Name: id,
+	t := Task{
+		Name:        id,
 		DisplayName: name,
-		Category: category,
-		Time: ttt,
-		Documents: make([]Document, 0),
+		Category:    category,
+		Time:        ttt,
+		Documents:   make([]Document, 0),
 	}
 	challenges := GetChallenges()
 	idx := -1
@@ -215,9 +215,9 @@ func createChallenge(r *http.Request) {
 	}
 	ttt := time.Now().UTC()
 	id := "challenge_" + strconv.FormatInt(ttt.UnixNano(), 16)
-	name := r.Form["name"][0]	
-//	startTime := r.Form["start_time"][0]	
-	endTime := r.Form["end_time"][0]	
+	name := r.Form["name"][0]
+	//	startTime := r.Form["start_time"][0]
+	endTime := r.Form["end_time"][0]
 	timeSplit := strings.Split(endTime, " ")
 	dd := strings.Split(timeSplit[0], "-")
 	hh := strings.Split(timeSplit[1], ":")
@@ -228,13 +228,13 @@ func createChallenge(r *http.Request) {
 	m, _ := strconv.Atoi(hh[1])
 	location, _ := time.LoadLocation("Europe/Sofia")
 	deadline := time.Date(y, time.Month(M), d, h, m, 0, 0, location)
-	
-	c := Challenge {
-		Id: id,
-		Name: name,
-		CreateTime: ttt,
-		EndTime: deadline, 
-		Tasks: make([]Task, 0),
+
+	c := Challenge{
+		Id:                  id,
+		Name:                name,
+		CreateTime:          ttt,
+		EndTime:             deadline,
+		Tasks:               make([]Task, 0),
 		AdditionalDocuments: make([]Task, 0),
 	}
 	challenges := GetChallenges()
@@ -256,12 +256,11 @@ func GetChallenges() *Challenges {
 	if err != nil {
 		c = Challenges{
 			ActiveChallenge: "",
-			Challenges: make([]Challenge, 0),
+			Challenges:      make([]Challenge, 0),
 		}
 	}
 	return &c
 }
-
 
 func UploadTask(w http.ResponseWriter, r *http.Request) error {
 	task, err := createTask(w, r)
@@ -308,15 +307,14 @@ func additionalDocument(r *http.Request, file multipart.File, header *multipart.
 		link = "/docs/" + fn
 	}
 	document := Document{
-		Id: "document_" + strconv.FormatInt(ttt.UnixNano(), 16),
-		Link: link,
+		Id:      "document_" + strconv.FormatInt(ttt.UnixNano(), 16),
+		Link:    link,
 		DocType: r.Form["type"][0],
-		Time: ttt,
+		Time:    ttt,
 	}
 	task.Documents = append(task.Documents, document)
 	writeChallenges(challenges)
 }
-
 
 func uploadDocument(r *http.Request, file multipart.File, header *multipart.FileHeader) {
 	//r.Body = http.MaxBytesReader(w, r.Body, 20*1024*1024)
@@ -354,10 +352,10 @@ func uploadDocument(r *http.Request, file multipart.File, header *multipart.File
 		link = "/docs/" + fn
 	}
 	document := Document{
-		Id: "document_" + strconv.FormatInt(ttt.UnixNano(), 16),
-		Link: link,
+		Id:      "document_" + strconv.FormatInt(ttt.UnixNano(), 16),
+		Link:    link,
 		DocType: r.Form["type"][0],
-		Time: ttt,
+		Time:    ttt,
 	}
 	task.Documents = append(task.Documents, document)
 	writeChallenges(challenges)
@@ -389,7 +387,7 @@ func createTask(w http.ResponseWriter, r *http.Request) ([]Task, error) {
 		task.Name = r.Form["name"][0]
 		task.Time = time.Now().UTC()
 		ttt = append(ttt, *task)
-	} 
+	}
 	if len(r.Form["display_name"][0]) != 0 {
 		task.DisplayName = r.Form["display_name"][0]
 	}
@@ -413,9 +411,9 @@ func createTask(w http.ResponseWriter, r *http.Request) ([]Task, error) {
 		link = "/docs/" + fn
 	}
 	document := Document{
-		Link: link,
+		Link:    link,
 		DocType: r.Form["doc_type"][0],
-		Time: time.Now().UTC(),
+		Time:    time.Now().UTC(),
 	}
 	if task.Documents == nil {
 		task.Documents = make([]Document, 0)
@@ -442,22 +440,22 @@ func GetTasks() []Task {
 }
 
 type Homework struct {
-	Link string
+	Link        string
 	Description string
-	Extension string
+	Extension   string
 }
 
 type TeamHomeworks struct {
-	Id string
-	Name string
+	Id        string
+	Name      string
 	Homeworks []Homework
-	Mark string
-	Comment string
+	Mark      string
+	Comment   string
 }
 
 type JudgeDashboard struct {
-	Task string
-	Homeworks []TeamHomeworks
+	Task             string
+	Homeworks        []TeamHomeworks
 	CurrentChallenge Challenge
 }
 
@@ -470,9 +468,9 @@ func GetJudgeDashboard(username string, task string) JudgeDashboard {
 		task = challenge.Tasks[0].Name
 	}
 	jd := JudgeDashboard{Task: task, CurrentChallenge: challenge, Homeworks: make([]TeamHomeworks, 0)}
-	tt := teams.GetTeams()
+	tt := teams.GetTeams("0")
 	tms := GetTeamMarks(username)
-	
+
 	for _, t := range tt {
 		tm := tms[t.Id]
 		m := tm.Marks[task]
@@ -480,7 +478,7 @@ func GetJudgeDashboard(username string, task string) JudgeDashboard {
 		hws := hw.ReadHomeworks(t.Id)
 		for _, hw := range hws {
 			if hw.Task == task {
-				h := Homework{Link:hw.Link, Description:hw.Description}
+				h := Homework{Link: hw.Link, Description: hw.Description}
 				if hw.Filename != "" && strings.Contains(hw.Filename, ".") {
 					lastIndex := strings.LastIndex(hw.Filename, ".")
 					ext := hw.Filename[lastIndex:]
@@ -495,8 +493,8 @@ func GetJudgeDashboard(username string, task string) JudgeDashboard {
 }
 
 type Mark struct {
-	TaskId string
-	Points string
+	TaskId  string
+	Points  string
 	Comment string
 }
 
@@ -514,7 +512,7 @@ func GetTeamMarks(username string) map[string]TeamMark {
 	return m
 }
 
-func GetTeamMark(username string, teamid string, taskname string) (string, string) { 
+func GetTeamMark(username string, teamid string, taskname string) (string, string) {
 	tms := GetTeamMarks(username)
 	t := tms[teamid]
 	m := t.Marks[taskname]
@@ -527,7 +525,7 @@ func writeTeamMarks(username string, m map[string]TeamMark) {
 	os.Create(file)
 	ioutil.WriteFile(file, json, 0700)
 }
-	
+
 func UpdatePoints(r *http.Request, username string) {
 	r.ParseForm()
 	teamId := r.Form["id"][0]
@@ -558,9 +556,9 @@ func UpdatePoints(r *http.Request, username string) {
 }
 
 type TeamResults struct {
-	Id string
-	Name string
-	Stars []int
+	Id      string
+	Name    string
+	Stars   []int
 	NoStars []int
 }
 
@@ -568,7 +566,7 @@ type Results []TeamResults
 
 type DisplayResults struct {
 	CurrentChallenge Challenge
-	AllResults Results
+	AllResults       Results
 }
 
 func (r Results) Len() int {
@@ -588,20 +586,20 @@ func (r Results) Less(i, j int) bool {
 	for _, element := range r[j].Stars {
 		countJ += element
 	}
-	return countI > countJ	
+	return countI > countJ
 }
 
 func GetCurrentResults() DisplayResults {
 	challenge := GetActiveChallenge()
-	return GetResults(challenge)
+	return GetResults(challenge, "0")
 }
 
-func GetFinishedResults() DisplayResults {
+func GetFinishedResults(division string) DisplayResults {
 	challenges := GetChallenges()
-	for i := len(challenges.Challenges)-1; i>=0; i-- {
+	for i := len(challenges.Challenges) - 1; i >= 0; i-- {
 		c := challenges.Challenges[i]
 		if c.State == "finished" {
-			return GetResults(c)
+			return GetResults(c, division)
 		}
 	}
 	return DisplayResults{}
@@ -609,24 +607,22 @@ func GetFinishedResults() DisplayResults {
 
 func GetLastFinishedChallenge() time.Time {
 	challenges := GetChallenges()
-	for i:= len(challenges.Challenges) - 1; i >= 0; i-- {
+	for i := len(challenges.Challenges) - 1; i >= 0; i-- {
 		c := challenges.Challenges[i]
 		if c.State == "finished" {
 			return c.EndTime
 		}
 	}
-	return time.Now() 
+	return time.Now()
 }
 
-
-
-func GetResults(challenge Challenge) DisplayResults {
+func GetResults(challenge Challenge, division string) DisplayResults {
 	tmrs := make(Results, 0)
 	//tmrs = append(tmrs, TeamResults{Id: "Id", Name: "Otbor", Results: []string{"A", "B", "C"}})
 
-	tt := teams.GetTeams()
+	tt := teams.GetTeams(division)
 	tms := GetTeamMarks("pesho")
-	
+
 	for _, t := range tt {
 		tm := tms[t.Id]
 		tr := TeamResults{Id: t.Id, Name: t.Name, Stars: make([]int, 0), NoStars: make([]int, 0)}
@@ -645,10 +641,6 @@ func GetResults(challenge Challenge) DisplayResults {
 	sort.Sort(tmrs)
 	return DisplayResults{
 		CurrentChallenge: challenge,
-		AllResults: tmrs,
+		AllResults:       tmrs,
 	}
 }
-
-
-
-

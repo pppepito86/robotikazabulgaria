@@ -107,7 +107,7 @@ func checkIdIsValid(id string) error {
 
 func checkTeamNameIsUnique(team string) error {
 	team = strings.ToLower(team)
-	teams := GetTeams()
+	teams := GetTeams("0")
 	for _, t := range teams {
 		if strings.ToLower(t.Name) == team {
 			return errors.New("Вече съществува отбор с това име")
@@ -120,7 +120,7 @@ func checkTeamNameIsUnique(team string) error {
 }
 
 func checkIdIsOK(id string) error {
-	teams := GetTeams()
+	teams := GetTeams("0")
 	for _, t := range teams {
 		if t.Id == id {
 			return errors.New("Идентификационият номер не е валиден")
@@ -135,18 +135,27 @@ func checkIdIsOK(id string) error {
 	return errors.New("Id is not valid")
 }
 
-func GetTeams() []Team {
+func GetTeams(division string) []Team {
 	var teams []Team
 	file := ws.ReadFile("teams.json")
 	err := json.Unmarshal(file, &teams)
 	if err != nil {
 		teams = make([]Team, 0)
 	}
-	return teams
+	if division == "0" {
+		return teams
+	}
+	teamResults := []Team{}
+	for _, team := range teams {
+		if team.Division == division {
+			teamResults = append(teamResults, team)
+		}
+	}
+	return teamResults
 }
 
 func AddTeam(team Team) {
-	teams := GetTeams()
+	teams := GetTeams("0")
 	teams = append(teams, team)
 	writeTeams(teams)
 }
@@ -159,7 +168,7 @@ func writeTeams(teams []Team) {
 }
 
 func Authenticate(username, password string) bool {
-	teams := GetTeams()
+	teams := GetTeams("0")
 	for _, t := range teams {
 		if (t.Name == username || t.Id == username) && t.Pass == password {
 			return true
@@ -170,7 +179,7 @@ func Authenticate(username, password string) bool {
 
 func GetRegisteredIds() map[string]bool {
 	m := make(map[string]bool)
-	tt := GetTeams()
+	tt := GetTeams("0")
 	for _, t := range tt {
 		m[t.Id] = true
 	}
@@ -178,7 +187,7 @@ func GetRegisteredIds() map[string]bool {
 }
 
 func GetTeamId(loginname string) string {
-	teams := GetTeams()
+	teams := GetTeams("0")
 	for _, t := range teams {
 		if t.Name == loginname || t.Id == loginname {
 			return t.Id
@@ -188,7 +197,7 @@ func GetTeamId(loginname string) string {
 }
 
 func GetTeamName(id string) string {
-	teams := GetTeams()
+	teams := GetTeams("0")
 	for _, t := range teams {
 		if t.Id == id {
 			return t.Name
@@ -201,7 +210,7 @@ func ChangeDivision(teamId, division string) {
 	if division != "1" && division != "2" {
 		return
 	}
-	teams := GetTeams()
+	teams := GetTeams("0")
 	for i, team := range teams {
 		if team.Id == teamId {
 			teams[i].Division = division

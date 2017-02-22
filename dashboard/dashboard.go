@@ -1,19 +1,19 @@
 package dashboard
 
 import (
+	"robotikazabulgaria/admin"
 	"robotikazabulgaria/hw"
 	"robotikazabulgaria/teams"
-	"robotikazabulgaria/admin"
 	"time"
 )
 
 type Dashboard struct {
-	Active bool
-	Name    string
-	Challenge   admin.Challenge
+	Active    bool
+	Name      string
+	Challenge admin.Challenge
 	Homeworks map[string][]hw.Homework
-	Marks map[string]admin.Mark
-	Teams []teams.Team
+	Marks     map[string]admin.Mark
+	Teams     []teams.Team
 }
 
 func GetDashboard(user string) Dashboard {
@@ -23,11 +23,11 @@ func GetDashboard(user string) Dashboard {
 	ch := admin.GetActiveChallenge()
 	act := time.Now().UTC().Before(ch.EndTime.UTC())
 	dashboard := Dashboard{
-		Active: act,
-		Name:    teams.GetTeamName(user),
+		Active:    act,
+		Name:      teams.GetTeamName(user),
 		Challenge: ch,
 		Homeworks: make(map[string][]hw.Homework),
-		Marks: t.Marks,
+		Marks:     t.Marks,
 	}
 	for _, homework := range homeworks {
 		if dashboard.Homeworks[homework.Task] == nil {
@@ -47,10 +47,10 @@ func GetHistoryDashboard(user string, team string) Dashboard {
 	tms := admin.GetTeamMarks("pesho")
 	t := tms[user]
 	//m := t.Marks[taskname]
-	
+
 	chs := admin.GetChallenges()
 	ch := admin.Challenge{}
-	for iii := len(chs.Challenges)-1; iii >= 0; iii-- {
+	for iii := len(chs.Challenges) - 1; iii >= 0; iii-- {
 		ccc := chs.Challenges[iii]
 		if ccc.State == "finished" {
 			ch = ccc
@@ -62,11 +62,11 @@ func GetHistoryDashboard(user string, team string) Dashboard {
 	}
 	act := time.Now().UTC().Before(ch.EndTime.UTC())
 	dashboard := Dashboard{
-		Active: act,
-		Name:    teams.GetTeamName(user),
+		Active:    act,
+		Name:      teams.GetTeamName(user),
 		Challenge: ch,
 		Homeworks: make(map[string][]hw.Homework),
-		Teams: teams.GetTeams(),
+		Teams:     teams.GetTeams("0"),
 	}
 	if origUser == user {
 		dashboard.Marks = t.Marks
@@ -80,4 +80,3 @@ func GetHistoryDashboard(user string, team string) Dashboard {
 
 	return dashboard
 }
-
