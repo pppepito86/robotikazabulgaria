@@ -7,6 +7,7 @@ import (
 	"os"
 	"robotikazabulgaria/ws"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -135,7 +136,12 @@ func checkIdIsOK(id string) error {
 	return errors.New("Id is not valid")
 }
 
+var mutex = &sync.Mutex{}
+
 func GetTeams(division string) []Team {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	var teams []Team
 	file := ws.ReadFile("teams.json")
 	err := json.Unmarshal(file, &teams)
@@ -161,6 +167,9 @@ func AddTeam(team Team) {
 }
 
 func writeTeams(teams []Team) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	file := ws.GetFilePath("teams.json")
 	json, _ := json.Marshal(teams)
 	os.Create(file)
