@@ -186,6 +186,9 @@
             $(points[i]).val(tokens[0]);
             $(comments[i]).val(tokens[1]);
         }
+		
+		$.each($(".fieldPoints"), function(y, x) {changePoints(x)});
+		$.each($(".fieldComments"), function(y, x) {changePoints(x)});
     }
     </script>
 		
