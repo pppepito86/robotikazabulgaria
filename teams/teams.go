@@ -216,7 +216,7 @@ func GetTeamName(id string) string {
 }
 
 func ChangeDivision(teamId, division string) {
-	if division != "1" && division != "2" {
+	if division != "1" && division != "2" && division != "3" {
 		return
 	}
 	teams := GetTeams("0")
